@@ -1,0 +1,235 @@
+/* Global */
+*{
+	margin:0;
+	padding: 0;
+	
+}
+
+html{
+	background-color:#457B9D;
+	color:#E63946;
+}
+
+/* ---------------------- Les Fonts ----------------------   */
+@font-face{
+	font-family: "Dosis-Regular";
+	src: url("../fonts/Dosis/Dosis-Regular.ttf")
+}
+
+@font-face{
+	font-family: "Raleway-Regular";
+	src: url("../fonts/Raleway/Raleway-Regular.ttf")
+}
+
+@font-face{
+	font-family: "Raleway-Bold";
+	src: url("../fonts/Raleway/Raleway-Bold.ttf")
+}
+
+
+
+/* ---------------------- Le contenu ----------------------  */
+body{
+	width:1080px;
+	height:980px;
+	margin:auto;
+	padding-top:300px;
+	background-color:#F1FAEE;
+	font-family: "Raleway-Regular";
+	transition: all 3s ease;
+	opacity: 0;
+}
+
+header{
+	display:block;
+	margin:auto;
+}
+
+/* ---------------------- Login ----------------------  */
+h1{
+	text-align: center;
+	padding:10px 0 30px 0;
+	
+}
+
+#login{
+	color:black;
+	text-align: center;
+	width:400px;
+	height:425px;
+	float:left;
+	border:2px solid black;
+	background-color:white;
+	margin-right: 6%;
+	padding:10px;
+	margin-left:3%;
+}
+
+#ligne1 h2{
+	padding-right: 53px;
+	display:inline;
+}
+
+#ligne2 h2{
+	padding-right: 10px;
+	display:inline;
+}
+
+input[type=text], input[type=password] {
+    height:20px;
+    border:2px solid #E63946; 
+    -webkit-border-radius: 5px;
+	border-radius: 5px;
+	font-family:"Raleway-Regular";
+}
+
+input[type=submit] {
+	height:30px;
+	width:150px;
+	margin-top:60px;
+    /* border:2px solid #E63946;  */
+    -webkit-border-radius: 5px;
+	border-radius: 5px;
+	font-family:"Raleway-Regular";
+	font-size:1em;
+	background-color:#F1FAEE;
+}
+
+#ligne1{
+	font-size:0.7em;
+	margin:60px 60px 0px 40px;
+	float:left;
+}
+
+#ligne2{
+	font-size:0.7em;
+	margin:20px 20px 0px 40px;
+	float:left;
+}
+
+.fb-login-button{
+	margin:60px auto 0 auto;
+	width:265px;
+	height:40px;
+	background-repeat:no-repeat;
+	background-image: url("../images/fb_button.png");
+}
+
+.google-login-button{
+	margin:15px auto 0 auto;
+	width:265px;
+	height:40px;
+	background-size:100%;
+	background-repeat:no-repeat;
+	background-image: url("../images/google_button.png");
+}
+
+/* ---------------------- Message d'accueil ----------------------  */
+main{
+	width:500px;
+	height:425px;
+	padding:10px;
+	border:2px solid black;
+	text-align: justify;
+	float:left;
+	margin-bottom:30px;
+	background-color:white;
+}
+
+p{
+	margin-bottom:20px;
+}
+
+li{
+	margin-left:20px;
+}
+
+ul{
+	margin-bottom:10px;
+}
+
+/* ----------------------  Le footer ----------------------  */
+#img_wizz{
+	width: 32%;
+	height:32%;
+	margin:auto;
+	display:block;
+	opacity:0;
+	transition: all 3s ease;
+}
+
+footer{
+	width:100%;
+	text-align:center;
+	margin-top:35px;
+	color:black;
+}
+
+
+/* Pour faire l'effet wizz */
+#img_wizz:hover {
+    animation: shake 0.5s; 
+    /* Le nombre de fois que l'on recommence*/
+    animation-iteration-count: infinite; 
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+} 
+
+#mess_mobile{
+	display: none;
+}
+
+
+@media only screen and (max-width: 1024px){
+	html{
+		background-color:#F1FAEE;
+	}
+	body{
+		width: 100%;
+		height:100%;
+	}
+	main, #login{
+		display:none;
+	}
+
+	header{
+		display:block;
+		font-size:3em;
+		margin:0 20% 100px 22%;
+		padding-top:100px;
+	}
+
+	#mess_mobile{
+		display: block;
+		text-align: center;
+		font-size:2.5em;
+		margin:30px auto;
+	}
+
+	#img_wizz{
+		width: 450px;
+		height:450px;
+		margin:150px auto;
+		display:block;
+		opacity:0;
+		transition: all 3s ease;
+	}
+
+	footer{
+		position:absolute;
+		bottom:0%;
+		font-size:2em;
+	}
+}
