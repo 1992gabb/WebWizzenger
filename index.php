@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<link rel="stylesheet" type="text/css" href="css/login_style.css">
-        <title>Wizzenger</title>
-        <script src="js/js_login.js"></script>
-    </head>
-	<body>
+<?php
+	require_once("action/indexAction.php");
+	
+	$action = new IndexAction();
+	$action->execute();
+
+	require_once("partial/header.php");
+?>
+	<body id = "index_body">
 		<!-- Pour l'utilisation du login facebook -->
 		<!--<script>
 				window.fbAsyncInit = function() {
@@ -29,28 +29,45 @@
 					fjs.parentNode.insertBefore(js, fjs);
 					}(document, 'script', 'facebook-jssdk'));
 		</script>-->
+
+		<script>
+			window.onload = () => {
+				document.body.style.opacity = 1;
+				document.body.style.paddingTop = 0;
+				setTimeout(afficherWizz, 1500);
+			}
+		</script>
 		
 		<header>
 			<h1>WIZZENGER</h1>
 		</header>
 
 		<!-- Espace de login -->
-		<div id="login">
-			<h2>CONNEXION</h2>
-			<div id = "ligne1">			
-				<h2 id="titre_user">Courriel: </h2>
-				<input type="text" name="usager" id="user" placeholder="">
+		<form action="index.php" method ="post" >
+			<div id="login">
+				<h2>CONNEXION</h2>
+				<div id = "ligne1">			
+					<h2 id="titre_user">Courriel: </h2>
+					<input type="text" name="username" id="user" placeholder="">
+				</div>
+				<div class="vider"></div>
+				<div id = "ligne2">
+					<h2>Mot de Passe: </h2>			
+					<input type="password" name="pwd" id="password" placeholder="">
+				</div>
+				<div class="vider"></div>
+				<?php
+					if ($action->wrongLogin) {
+						?>
+						<div class="error-div"><strong> </strong><?=$action->errorMessage?></div>
+						<?php
+					}
+				?>
+				<input type="submit" name="bouton" id="btn_submit" value="Connexion">
+				<div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+				<div class="google-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
 			</div>
-			<div class="vider"></div>
-			<div id = "ligne2">
-				<h2>Mot de Passe: </h2>			
-				<input type="password" name="mot de passe" id="password" placeholder="">
-			</div>
-			<div class="vider"></div>
-			<input type="submit" name="bouton" id="btn_submit" value="Connexion">
-			<div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-			<div class="google-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-		</div>
+		</form>
 
 		<!-- Message d'accueil -->
 		<main>
@@ -80,6 +97,5 @@
 			
 		</div>
 		
-		<footer>Tous Droits Réservés.                Créé par Gabriel Bombardier                  10 Février 2018</footer>
-	</body>
-</html>
+		<?php
+		require_once("partial/footer.php");

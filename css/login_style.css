@@ -2,12 +2,10 @@
 *{
 	margin:0;
 	padding: 0;
-	
 }
 
 html{
 	background-color:#457B9D;
-	color:#E63946;
 }
 
 /* ---------------------- Les Fonts ----------------------   */
@@ -28,8 +26,8 @@ html{
 
 
 
-/* ---------------------- Le contenu ----------------------  */
-body{
+/* ---------------------- Le contenu de la page index----------------------  */
+#index_body{
 	width:1080px;
 	height:980px;
 	margin:auto;
@@ -43,6 +41,7 @@ body{
 header{
 	display:block;
 	margin:auto;
+	color:#E63946;
 }
 
 /* ---------------------- Login ----------------------  */
@@ -191,6 +190,102 @@ footer{
 	display: none;
 }
 
+/* -------------------- Fin de la page index ------------------------ */
+
+
+/* -------------------- Pour la page main --------------------------- */
+
+#main_body{
+	width:100%;
+	height:980px;
+	margin:auto;
+	font-family: "Raleway-Regular";
+	background-color:white;
+}
+
+#zone_browsing{
+	width:20%;
+	height:980px;
+	float:left;
+	background-color:#F1FAEE;
+}
+
+#zone_selectedConvo{
+	width:80%;
+	height:980px;
+	float:left;
+	background-color:blue;
+}
+
+#zone_recherche{
+	width:100%;
+	height: 7%;
+	background-color:#F1FAEE;
+}
+
+/* Pour gérer l'affichage des tabs, inspiré de: https://www.w3schools.com/howto/howto_js_tabs.asp*/
+#titles_tab_titles {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+#titles_tab_titles button {
+	background-color: inherit;
+	width:50%;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+#titles_tab_titles button:hover {
+    background-color: #ddd;
+}
+
+#titles_tab_titles button.active {
+    background-color: #ccc;
+}
+
+#zone_convos{
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+#zone_contacts{
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+
+
+
+
+footer{
+	display:none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* -------------------- Fin de la page main ------------------------ */
+
+
+/* -------------------- Pour mobiles et tablettes ------------------------ */
 
 @media only screen and (max-width: 1024px){
 	html{
@@ -233,3 +328,5 @@ footer{
 		font-size:2em;
 	}
 }
+
+/* -------------------- Fin mobiles et tablettes ------------------------ */
