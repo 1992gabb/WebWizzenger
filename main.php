@@ -8,8 +8,11 @@
 ?>
 	<body id = "main_body">
 	<div id = "zone_browsing">
+			<header id = "main_header">
+				<p style="text-align:center;">Wizzenger</p>
+			</header>
 			<div id = "zone_recherche">
-				<p>Zone Recherche</p>
+				<p style="text-align:center;">Zone Recherche</p>
 			</div>
 
 			<div id = "zone_titles">
@@ -32,22 +35,22 @@
 
 		<div id = "zone_selectedConvo">
 			<div id = "selectedConvo_title">
-			
+				<p>Zone Convo Titre</p>
 
 			</div>
 
 			<div id = "selectedConvo_messages">
-			
+				<p>Zone Convo Messages</p>
 
 			</div>
 
 			<div id = "selectedConvo_writeSend">
 				<div id = "selectedConvo_entryZone">
-			
+					<p>Zone Convo Entrée</p>
 
 				</div>
 				<div id = "selectedConvo_sendButton">
-			
+					<p>Zone Bouton envoyer</p>
 
 				</div>
 			</div>

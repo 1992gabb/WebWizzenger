@@ -6,6 +6,7 @@
 
 html{
 	background-color:#457B9D;
+	height:950px;
 }
 
 /* ---------------------- Les Fonts ----------------------   */
@@ -197,7 +198,7 @@ footer{
 
 #main_body{
 	width:100%;
-	height:980px;
+	height:100%;
 	margin:auto;
 	font-family: "Raleway-Regular";
 	background-color:white;
@@ -205,21 +206,28 @@ footer{
 
 #zone_browsing{
 	width:20%;
-	height:980px;
+	height:100%;
 	float:left;
 	background-color:#F1FAEE;
 }
 
 #zone_selectedConvo{
 	width:80%;
-	height:980px;
+	height:100%;
 	float:left;
 	background-color:blue;
 }
 
+#main_header{
+	width:100%;
+	height: 5%;
+	margin:auto;
+	color:#E63946;
+}
+
 #zone_recherche{
 	width:100%;
-	height: 7%;
+	height: 5%;
 	background-color:#F1FAEE;
 }
 
@@ -238,7 +246,8 @@ footer{
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
-    transition: 0.3s;
+	transition: 0.3s;
+	font-family:"Raleway-Regular";
 }
 
 #titles_tab_titles button:hover {
@@ -261,6 +270,25 @@ footer{
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
+}
+/* Fin pour les tabs */
+
+#selectedConvo_title{
+	width:100%;
+	height:5%;
+	background-color:red;
+}
+
+#selectedConvo_messages{
+	width:100%;
+	height:86%;
+	background-color:white;
+}
+
+#selectedConvo_writeSend{
+	width:100%;
+	height:7%;
+	background-color:blue;
 }
 
 
