@@ -5,8 +5,24 @@
 	$action->execute();
 
 	require_once("partial/header.php");
+	require_once("partial/firebase.php");
 ?>
 	<body id = "main_body">
+
+	<script>
+	
+		window.onload = () => {
+			firebase.auth().onAuthStateChanged(function(user) {
+					if (user) {
+						console.log(user);
+					} else {
+						<?php $_SESSION["visibility"] = CommonAction::$VISIBILITY_PUBLIC;  ?>
+						document.location.href="index.php";
+					}
+			});
+		}
+
+	</script>
 	<div id = "zone_browsing">
 			<header id = "main_header">
 				<p style="text-align:center;">Wizzenger</p>

@@ -83,7 +83,7 @@ input[type=text], input[type=password] {
 	font-family:"Raleway-Regular";
 }
 
-input[type=submit] {
+#btn_submit {
 	height:30px;
 	width:150px;
 	margin:60px auto 5px auto;

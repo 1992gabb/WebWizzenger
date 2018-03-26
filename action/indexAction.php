@@ -12,17 +12,17 @@
 
 		protected function executeAction() {
 			$this->wrongLogin = false;
-
-			if(isset($_POST["username"])){
-				if($_POST["username"] === "gab" && $_POST["pwd"] === "aaa"){
-					$_SESSION["visibility"] = CommonAction::$VISIBILITY_MEMBER;
-					header("location:main.php");
-					exit;
-				}else{
-					$this->wrongLogin = true;
-				}
-			}else{
-				$this->wrongLogin = true;
-			}
+			
+			// if(isset($_POST["username"]) && isset($_POST["pwd"])){
+			// 	if($_POST["username"] === "gab" && $_POST["pwd"] === "aaa"){
+			// 		$_SESSION["visibility"] = CommonAction::$VISIBILITY_MEMBER;
+			// 		header("location:main.php");
+			// 		exit;
+			// 	}else{
+			// 		$this->wrongLogin = true;
+			// 	}
+			// }else{
+			// 	$this->wrongLogin = true;
+			// }
 		}
 	}

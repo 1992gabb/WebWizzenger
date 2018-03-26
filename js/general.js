@@ -27,6 +27,10 @@ function register(){
     document.location.href="register.php"
 }
 
+function currentUserInfo(){
+    return firebase.auth().currentUser;
+}
+
 window.onclick = function(event) {
     if (event.target == popupRegister) {
         popupRegister.style.display = "none";
