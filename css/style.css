@@ -86,13 +86,30 @@ input[type=text], input[type=password] {
 input[type=submit] {
 	height:30px;
 	width:150px;
-	margin-top:60px;
+	margin:60px auto 5px auto;
     /* border:2px solid #E63946;  */
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
 	font-size:1em;
 	background-color:#F1FAEE;
+}
+
+#btn_register{
+	height:30px;
+	width:150px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	font-family:"Raleway-Regular";
+	font-size:1em;
+	background-color:#F1FAEE;
+}
+
+#zone_boutons_index{
+	display:block;
+	float:left;
+	width:150px;
+	margin:15px 31%;
 }
 
 #ligne1{
@@ -107,21 +124,25 @@ input[type=submit] {
 	float:left;
 }
 
-.fb-login-button{
-	margin:60px auto 0 auto;
-	width:265px;
-	height:40px;
-	background-repeat:no-repeat;
-	background-image: url("../images/fb_button.png");
+.popup {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto;
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
 }
 
-.google-login-button{
-	margin:15px auto 0 auto;
-	width:265px;
-	height:40px;
-	background-size:100%;
-	background-repeat:no-repeat;
-	background-image: url("../images/google_button.png");
+#popup_contenu {
+    background-color: #fefefe;
+    margin: 15% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
 }
 
 /* ---------------------- Message d'accueil ----------------------  */

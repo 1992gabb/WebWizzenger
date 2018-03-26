@@ -23,7 +23,13 @@ function openTab(evt, tabTitle) {
 	evt.currentTarget.className += " active";
 }
 
-window.onload = () => {
-	document.getElementById("default").click();
+function register(){
+    document.location.href="register.php"
+}
+
+window.onclick = function(event) {
+    if (event.target == popupRegister) {
+        popupRegister.style.display = "none";
+    }
 }
 

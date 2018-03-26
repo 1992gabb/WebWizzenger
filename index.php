@@ -7,34 +7,16 @@
 	require_once("partial/header.php");
 ?>
 	<body id = "index_body">
-		<!-- Pour l'utilisation du login facebook -->
-		<!--<script>
-				window.fbAsyncInit = function() {
-					FB.init({
-					appId      : '{2005498436404804}',
-					cookie     : true,
-					xfbml      : true,
-					version    : '{latest-api-version}'
-					});
-					
-					FB.AppEvents.logPageView();   
-					
-				};
-				
-				(function(d, s, id){
-					var js, fjs = d.getElementsByTagName(s)[0];
-					if (d.getElementById(id)) {return;}
-					js = d.createElement(s); js.id = id;
-					js.src = "https://connect.facebook.net/en_US/sdk.js";
-					fjs.parentNode.insertBefore(js, fjs);
-					}(document, 'script', 'facebook-jssdk'));
-		</script>-->
+
 
 		<script>
+			let popupRegister;
+
 			window.onload = () => {
 				document.body.style.opacity = 1;
 				document.body.style.paddingTop = 0;
 				setTimeout(afficherWizz, 1500);
+    			popupRegister = document.getElementById("zone_register");
 			}
 		</script>
 		
@@ -43,8 +25,9 @@
 		</header>
 
 		<!-- Espace de login -->
-		<form action="index.php" method ="post" >
-			<div id="login">
+		
+		<div id="login">
+			<form action="index.php" method ="post" >
 				<h2>CONNEXION</h2>
 				<div id = "ligne1">			
 					<h2 id="titre_user">Courriel: </h2>
@@ -63,11 +46,13 @@
 						<?php
 					}
 				?>
-				<input type="submit" name="bouton" id="btn_submit" value="Connexion">
-				<div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-				<div class="google-login-button" data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
-			</div>
-		</form>
+				<div id="zone_boutons_index">
+					<input type="submit" name="bouton" id="btn_submit" value="Connexion">
+					
+				</div>
+			</form>
+			<button onclick="register()" id="btn_register">S'enregistrer</button>
+		</div>
 
 		<!-- Message d'accueil -->
 		<main>
