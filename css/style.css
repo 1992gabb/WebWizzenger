@@ -318,6 +318,15 @@ footer{
 	width:100%;
 	border: 1px solid black;
 	margin:2px;
+	z-index: 1;
+}
+
+.conversationInList:hover{
+	float:left;
+	width:100%;
+	border: 1px solid black;
+	margin:2px;
+	background-color:#d3d3d3;
 }
 
 .convoAvatar{
@@ -329,7 +338,7 @@ footer{
 
 .conversationsInList_texte{
 	float:left;
-	width:72%;
+	width:73.5%;
 	margin-left:5px;
 }
 
