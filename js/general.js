@@ -31,9 +31,5 @@ function currentUserInfo(){
     return firebase.auth().currentUser;
 }
 
-window.onclick = function(event) {
-    if (event.target == popupRegister) {
-        popupRegister.style.display = "none";
-    }
-}
+
 

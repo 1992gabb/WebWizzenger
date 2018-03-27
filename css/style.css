@@ -32,10 +32,10 @@ html{
 	width:1080px;
 	height:980px;
 	margin:auto;
-	padding-top:300px;
+	padding-top:10px;
 	background-color:#F1FAEE;
 	font-family: "Raleway-Regular";
-	transition: all 3s ease;
+	transition: all 1s ease;
 	opacity: 0;
 }
 
@@ -283,7 +283,8 @@ footer{
     display: none;
     padding: 6px 12px;
     border: 1px solid #ccc;
-    border-top: none;
+	border-top: none;
+	height:800px;
 }
 
 #zone_contacts{
@@ -312,12 +313,28 @@ footer{
 	background-color:blue;
 }
 
+.conversationInList{
+	float:left;
+	width:100%;
+	border: 1px solid black;
+	margin:2px;
+}
 
+.convoAvatar{
+	float:left;
+	display:block;
+	width:25%;
+	height:100%;
+}
 
+.conversationsInList_texte{
+	float:left;
+	width:72%;
+	margin-left:5px;
+}
 
-
-footer{
-	display:none;
+.conversationInList p{
+	margin-bottom: 5px;
 }
 
 
@@ -330,7 +347,9 @@ footer{
 
 
 
-
+footer{
+	display:none;
+}
 /* -------------------- Fin de la page main ------------------------ */
 
 
