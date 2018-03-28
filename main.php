@@ -15,6 +15,7 @@
 		var convosData;
 		var convosList = [];
 		var myConvosList = [];
+		let currentConvo;
 
 		var usersRef = firebase.database().ref('users/');
 		var usersData;
@@ -24,7 +25,12 @@
 		var contactsData;
 		var myContactsList = [];
 
+		//Pour les éléments de la conversation courante
 		var currentContactName;
+		let divTitle;
+		let divMessages;
+		let divEntry;
+
 	
 		window.onload = () => {
 			firebase.auth().onAuthStateChanged(function(user) {
@@ -86,6 +92,7 @@
 				}
 
 				for(let i=0;i<myConvosList.length;i++){
+					
 					addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
 				}
 
@@ -122,6 +129,7 @@
 				}
 
 				for(let i=0;i<myContactsList.length;i++){
+					console.log(myContactsList[i]);
 					addContactToList(myContactsList[i].user2.username);
 				}
 			});
@@ -159,7 +167,7 @@
 			newConvo.onclick = function (e) {
 				let currentDOM = e.target.parentElement.parentElement;
 				currentContactName = currentDOM.childNodes[1].childNodes[0].innerHTML;
-				console.log(currentContactName);
+				afficherConvo(currentContactName);
 			}
 		}
 
@@ -179,8 +187,28 @@
 		}
 
 		//Affiche la conversation dans l'espace de droite
-		function afficherConvo(){
-			console.log("allo!");
+		function afficherConvo(contactName){
+			console.log(contactName);
+			let pTitle = document.getElementById("p_title");
+			pTitle.innerHTML = contactName;
+
+
+			currentConvo = loadConvo(contactName);
+			updateConvoMessages(currentConvo);
+		}
+
+		function loadConvo(contactName){
+			for(let i=0;i<myConvosList.length;i++){
+				console.log(myConvosList[i]);
+				if(myConvosList[i].user2.username == contactName){
+					currentConvo = convosData[data];
+					console.log(currentConvo);
+				}
+			}
+		}
+
+		function updateConvoMessages(convo){
+
 		}
 
 	</script>
@@ -210,7 +238,7 @@
 
 		<div id = "zone_selectedConvo">
 			<div id = "selectedConvo_title">
-				<p>Zone Convo Titre</p>
+				<p id="p_title">Zone Convo Titre</p>
 
 			</div>
 
