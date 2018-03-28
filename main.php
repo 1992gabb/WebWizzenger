@@ -18,8 +18,7 @@
 
 		var usersRef = firebase.database().ref('users/');
 		var usersData;
-		var usersName = {};
-		var usersEmail;
+		var currentUserData;
 
 		var contactsRef = firebase.database().ref('contacts/');
 		var contactsData;
@@ -56,21 +55,38 @@
 			usersRef.once('value', function(snapshot) {
 				usersData = snapshot.val();
 
+				//Pour avoir les infos de l'utilisateur connecté
 				for(data in usersData){
-					usersName[usersData[data].email] = usersData[data].username;
+					if(usersData[data].email == currentUser.email){
+						currentUserData = new User(data, usersData[data].email,usersData[data].avatar,usersData[data].phone,usersData[data].username,usersData[data].token);
+					}
 				}
 
+				//Pour créer la liste des conversations
 				convosList = [];
 				for(data in convosData){
 					if(convosData[data].idUser1 == currentUser.email){
-						myConvosList.push(new Conversation(data, convosData[data].idUser1, convosData[data].idUser2, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+						//Pour trouver le user correspondant au contact
+						for(data2 in usersData){
+							if(usersData[data2].email == convosData[data].idUser2){
+								contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+								myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+							}
+						}
+						
 					}else if(convosData[data].idUser2 == currentUser.email){
-						myConvosList.push(new Conversation(data, convosData[data].idUser2, convosData[data].idUser1, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+						//Pour trouver le user correspondant au contact
+						for(data3 in usersData){
+							if(usersData[data3].email == convosData[data].idUser1){
+								contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
+								myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+							}
+						}
 					}
 				}
 
 				for(let i=0;i<myConvosList.length;i++){
-					addConvoToList(myConvosList[i].user2, myConvosList[i].textHint);
+					addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
 				}
 
 				readContacts();
@@ -86,20 +102,33 @@
 
 				for(data in contactsData){
 					if(contactsData[data].userID == currentUser.email){
-						myContactsList.push(new Contact(data, contactsData[data].userID,contactsData[data].contactID))
+						//Pour trouver le user correspondant au contact
+						for(data2 in usersData){
+							if(usersData[data2].email == contactsData[data].contactID){
+								contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+								myContactsList.push(new Contact(data2, currentUserData,contact));
+							}
+						}
+						
 					}else if(contactsData[data].contactID == currentUser.email){
-						myContactsList.push(new Contact(data, contactsData[data].contactID,contactsData[data].userID))
+						//Pour trouver le user correspondant au contact
+						for(data3 in usersData){
+							if(usersData[data3].email == contactsData[data].userID){
+								contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
+								myContactsList.push(new Contact(data3, currentUserData,contact));
+							}
+						}
 					}
 				}
 
 				for(let i=0;i<myContactsList.length;i++){
-					console.log(myContactsList[i]);
-					addContactToList(myContactsList[i].user2, myContactsList[i].textHint);
+					addContactToList(myContactsList[i].user2.username);
 				}
 			});
 		}
 
-		function addConvoToList(contactEmail, textHint){
+		//Créé les div pour chacune des conversations
+		function addConvoToList(contactName, textHint){
 			let newConvo = document.createElement("div");
 			newConvo.setAttribute("class", "conversationInList");
 			
@@ -111,7 +140,7 @@
 			zoneTexte.setAttribute("class", "conversationsInList_texte");
 
 			let convoContact = document.createElement("p");
-			let text = document.createTextNode(usersName[contactEmail]);
+			let text = document.createTextNode(contactName);
 			convoContact.appendChild(text);
 			zoneTexte.appendChild(convoContact);
 			
@@ -134,15 +163,16 @@
 			}
 		}
 
-		function addContactToList(contactEmail){
+		//Pour créer des div pour chacun des contacts
+		function addContactToList(contactName){
 			let newContact = document.createElement("div");
 			newContact.setAttribute("class", "contactInList");
 
-			let contactName = document.createElement("p");
-			let text = document.createTextNode(usersName[contactEmail]);
-			contactName.appendChild(text);
+			let contactNameP = document.createElement("p");
+			let text = document.createTextNode(contactName);
+			contactNameP.appendChild(text);
 
-			newContact.appendChild(contactName);
+			newContact.appendChild(contactNameP);
 
 			let container = document.getElementById("zone_contacts");
 			container.appendChild(newContact);
