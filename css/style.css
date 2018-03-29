@@ -6,7 +6,7 @@
 
 html{
 	background-color:#457B9D;
-	height:950px;
+	height:100vh;
 }
 
 /* ---------------------- Les Fonts ----------------------   */
@@ -229,7 +229,7 @@ footer{
 	width:20%;
 	height:100%;
 	float:left;
-	background-color:#F1FAEE;
+	background-color:rgba(255,255,255,0.5);
 }
 
 #zone_selectedConvo{
@@ -244,12 +244,13 @@ footer{
 	height: 5%;
 	margin:auto;
 	color:#E63946;
+	background-color:rgba(255,255,255,0.5);
 }
 
 #zone_recherche{
 	width:100%;
 	height: 5%;
-	background-color:#F1FAEE;
+	background-color:rgba(255,255,255,0.5);
 }
 
 /* Pour gérer l'affichage des tabs, inspiré de: https://www.w3schools.com/howto/howto_js_tabs.asp*/
@@ -285,26 +286,32 @@ footer{
     border: 1px solid #ccc;
 	border-top: none;
 	height:800px;
+	overflow:scroll; 
+	overflow-x: hidden;
 }
 
 #zone_contacts{
     display: none;
     padding: 6px 12px;
     border: 1px solid #ccc;
-    border-top: none;
+	border-top: none;
+	overflow:scroll; 
+	overflow-x: hidden;
 }
 /* Fin pour les tabs */
 
 #selectedConvo_title{
 	width:100%;
 	height:5%;
-	background-color:red;
+	background-color:#8bb372;
+	padding: 22px 14px 0px 15px;
 }
 
 #selectedConvo_messages{
 	width:100%;
-	height:86%;
+	height:82%;
 	background-color:white;
+	overflow:scroll; 
 }
 
 #selectedConvo_writeSend{
@@ -316,29 +323,37 @@ footer{
 .conversationInList{
 	float:left;
 	width:100%;
-	border: 1px solid black;
-	margin:2px;
+	height:50px;
+	margin:2px 0px;
 	z-index: 1;
 }
 
 .conversationInList:hover{
 	float:left;
 	width:100%;
-	border: 1px solid black;
-	margin:2px;
+	margin:2px 0px;
 	background-color:#d3d3d3;
 }
 
 .convoAvatar{
 	float:left;
 	display:block;
-	width:25%;
+	width:15%;
 	height:100%;
+	border-radius: 50%;
 }
 
 .conversationsInList_texte{
 	float:left;
 	width:73.5%;
+	padding-top:5px;
+	padding-left:5px;
+	margin-left:5px;
+}
+
+.conversationsInList_texte2{
+	float:left;
+	width:100%;
 	margin-left:5px;
 }
 
@@ -346,9 +361,22 @@ footer{
 	margin-bottom: 5px;
 }
 
-#selectedConvo_title{
-	padding-top:25px;
-	padding-left:15px;
+.one_message{
+	padding:10px 15px;
+	margin:5px 5px;
+	border-radius: 25px;
+	width:200px;
+}
+
+.vider{
+	width:100%;
+	clear:both;
+}
+
+.timestamp p{
+	width:100%;
+	margin:5px 0px;
+	text-align:center;
 }
 
 

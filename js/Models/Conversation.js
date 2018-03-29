@@ -6,7 +6,7 @@ class Conversation{
 		this.user1 = user1;
 		this.user2 = user2;
 		this.textHint = textHint;
-		this.messages = [];
+		this.messages = messages;
 		this.lastMessageDate = lastMessageDate;
 	}
 }

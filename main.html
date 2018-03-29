@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+        <title>Wizzenger</title>
+		<script src="js/general.js"></script>
+		<script src="js/Models/Conversation.js"></script>
+		<script src="js/Models/Contact.js"></script>
+		<script src="js/Models/Message.js"></script>
+		<script src="js/Models/User.js"></script>
+	</head>
+	
+	<body id = "main_body">
+
+	<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+	<script type="text/javascript" src="js/firebase.js"></script>
+	<script>
+		window.onload = () => {
+			firebase.auth().onAuthStateChanged(function(user) {
+					if (user) {
+						currentUser = user;
+					} else {
+						document.location.href="index.php";
+					}
+			});
+
+			readConvos();
+
+			document.getElementById("default").click();
+		}
+	</script>
+
+	<script type="text/javascript" src="js/mainFunctions.js"></script>
+
+	<div id = "zone_browsing">
+			<header id = "main_header">
+				<p style="text-align:center;">Wizzenger</p>
+			</header>
+			<div id = "zone_recherche">
+				<p style="text-align:center;">Zone Recherche</p>
+			</div>
+
+			<div id = "zone_titles">
+				<div id="titles_tab_titles">
+  					<button class="tab_links" onclick="openTab(event, 'zone_convos')" id ="default">Conversations</button>
+					<button class="tab_links" onclick="openTab(event, 'zone_contacts')">Contacts</button>
+				</div>
+			</div>
+
+			<div id = "zone_convos" class = "tab_content">
+				<!-- Populé par le code javascript (voir readConvos) -->
+			</div>
+
+			<div id = "zone_contacts" class = "tab_content">
+				<!-- Populé par le code javascript (voir readContacts) -->
+			</div>
+		</div>
+
+		<div id = "zone_selectedConvo">
+			<div id = "selectedConvo_title">
+				<p id="p_title">Sélectionnez une conversation pour commencer!</p>
+
+			</div>
+
+			<div id = "selectedConvo_messages">
+				<!-- Populé par le code javascript (voir afficherConvo) -->
+
+			</div>
+
+			<div id = "selectedConvo_writeSend">
+				<div id = "selectedConvo_entryZone">
+					<p>Zone Convo Entrée</p>
+
+				</div>
+				<div id = "selectedConvo_sendButton">
+					<p style="margin-bottom:0px;">Zone Bouton envoyer</p>
+
+				</div>
+			</div>
+		</div>
+		<footer>Tous Droits Réservés.                Créé par Gabriel Bombardier                  10 Février 2018</footer>
+	</body>
+</html>

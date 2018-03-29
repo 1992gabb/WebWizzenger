@@ -1,13 +1,19 @@
-<?php
-	require_once("action/indexAction.php");
-	
-	$action = new IndexAction();
-	$action->execute();
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+        <title>Wizzenger</title>
+		<script src="js/general.js"></script>
+		<script src="js/Models/Conversation.js"></script>
+		<script src="js/Models/Contact.js"></script>
+		<script src="js/Models/Message.js"></script>
+		<script src="js/Models/User.js"></script>
+	</head>
 
-	require_once("partial/header.php");
-	require_once("partial/firebase.php");
-?>
-	<body id = "index_body">
+	<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+	<script type="text/javascript" src="js/firebase.js"></script>
+
 		<script>
 			let popupRegister;
 			let email;
@@ -24,7 +30,6 @@
 
 				if(currentUser!=null){
 					document.location.href = "main.php"
-					<?php $_SESSION["visibility"] = CommonAction::$VISIBILITY_MEMBER;  ?>
 				}
 			}
 
@@ -52,7 +57,6 @@
 
 				firebase.auth().onAuthStateChanged(function(user) {
 					if (user) {
-						<?php $_SESSION["visibility"] = CommonAction::$VISIBILITY_MEMBER;  ?>
 						document.location.href="main.php";
 					} else {
 					// No user is signed in.
@@ -62,6 +66,7 @@
 			}
 		</script>
 		
+	<body id = "index_body">
 		<header>
 			<h1>WIZZENGER</h1>
 		</header>
@@ -81,13 +86,6 @@
 					<input type="password" name="pwd" id="password" placeholder="" value = "Briel_1029">
 				</div>
 				<div class="vider"></div>
-				<?php
-					if ($action->wrongLogin) {
-						?>
-						<div class="error-div"><strong> </strong><?=$action->errorMessage?></div>
-						<?php
-					}
-				?>
 				<div id="zone_boutons_index">
 					<button onclick="signIn()" id="btn_submit">Connexion</button>
 				</div>
@@ -122,6 +120,6 @@
 			<p>Pour utiliser l'application sur mobile, veuillez nous visiter sur le <a href="#">Play Store</a>!</p> 
 			
 		</div>
-		
-		<?php
-		require_once("partial/footer.php");
+		<footer>Tous Droits Réservés.                Créé par Gabriel Bombardier                  10 Février 2018</footer>
+	</body>
+</html>
