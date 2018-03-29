@@ -24,7 +24,7 @@ function openTab(evt, tabTitle) {
 }
 
 function register(){
-    document.location.href="register.php"
+    document.location.href="register.html"
 }
 
 function currentUserInfo(){
