@@ -4,11 +4,6 @@
 	padding: 0;
 }
 
-html{
-	background-color:#457B9D;
-	height:100vh;
-}
-
 /* ---------------------- Les Fonts ----------------------   */
 @font-face{
 	font-family: "Dosis-Regular";
@@ -236,12 +231,11 @@ footer{
 	width:80%;
 	height:100%;
 	float:left;
-	background-color:blue;
 }
 
 #main_header{
 	width:100%;
-	height: 5%;
+	height: 4.1%;
 	margin:auto;
 	color:#E63946;
 	background-color:rgba(255,255,255,0.5);
@@ -249,7 +243,7 @@ footer{
 
 #zone_recherche{
 	width:100%;
-	height: 5%;
+	height: 4.2%;
 	background-color:rgba(255,255,255,0.5);
 }
 
@@ -282,12 +276,13 @@ footer{
 
 #zone_convos{
     display: none;
-    padding: 6px 12px;
+    padding: 4px 12px;
     border: 1px solid #ccc;
 	border-top: none;
 	height:800px;
 	overflow:scroll; 
 	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 #zone_contacts{
@@ -297,29 +292,35 @@ footer{
 	border-top: none;
 	overflow:scroll; 
 	overflow-x: hidden;
+	overflow-y: hidden;
+	height:800px;
 }
 /* Fin pour les tabs */
 
 #selectedConvo_title{
 	width:100%;
-	height:5%;
+	height:78px;
+	line-height: 78px;
 	background-color:#8bb372;
-	padding: 22px 14px 0px 15px;
+	padding: 0px 14px 0px 15px;
+	color:white;
 }
 
 #selectedConvo_messages{
 	width:100%;
-	height:82%;
+	height:793px;
 	background-color:white;
 	overflow:scroll; 
+	overflow-x: hidden;
 }
 
 #selectedConvo_writeSend{
 	width:100%;
-	height:7%;
-	background-color:blue;
+	height:3%;
+	display:none;
 }
 
+/* Gere l'affichage d'une conversation dans la liste */
 .conversationInList{
 	float:left;
 	width:100%;
@@ -361,6 +362,65 @@ footer{
 	margin-bottom: 5px;
 }
 
+/* Fin de l'affichage d'une conversation dans la liste */
+
+/* Gere l'affichage d'un contact dans la liste */
+.contactInList{
+	float:left;
+	width:100%;
+	height:50px;
+	margin:2px 0px;
+	z-index: 1;
+	line-height:50px;
+}
+
+.contactInList:hover{
+	float:left;
+	width:100%;
+	margin:2px 0px;
+	background-color:#d3d3d3;
+}
+
+.contactAvatar{
+	float:left;
+	display:block;
+	width:15%;
+	height:100%;
+	border-radius: 50%;
+}
+
+.contactImages{
+	float:left;
+	display:block;
+	width:15%;
+	height:100%;
+	margin-left:15px;
+	border-radius: 50%;
+}
+
+.conversationsInList_texte{
+	float:left;
+	width:40%;
+	padding-top:5px;
+	padding-left:5px;
+	margin-left:5px;
+}
+
+.conversationsInList_texte2{
+	float:left;
+	width:100%;
+	margin-left:5px;
+}
+
+.contactInList p{
+	float:left;
+	width:40%;
+	margin-bottom: 5px;
+}
+
+/* Fin de l'affichage d'un contact dans la liste */
+
+
 .one_message{
 	padding:10px 15px;
 	margin:5px 5px;
@@ -377,6 +437,14 @@ footer{
 	width:100%;
 	margin:5px 0px;
 	text-align:center;
+}
+
+#button_send{
+	position:relative;
+	float:right;
+	margin-top:-65px;
+	width:130px;
+	height:60px;
 }
 
 

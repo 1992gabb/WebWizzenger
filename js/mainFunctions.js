@@ -143,6 +143,7 @@ function addConvoToList(contactName, textHint){
 		let currentDOM = e.target.parentElement.parentElement;
 		currentContactName = currentDOM.childNodes[1].childNodes[0].innerHTML;
 		lastMessageCreated = null;
+		document.getElementById("message_content").value = "";
 		afficherConvo(currentContactName);
 	}
 }
@@ -171,11 +172,29 @@ function addContactToList(contactName){
 	let newContact = document.createElement("div");
 	newContact.setAttribute("class", "contactInList");
 
+	let contactAvatar = document.createElement("img");
+	contactAvatar.setAttribute("class", 'contactImages');
+	contactAvatar.setAttribute("src", 'images/back.jpg');
+
 	let contactNameP = document.createElement("p");
+	contactNameP.setAttribute("style", "width:35%;height:100%;margin-left:10px;")
 	let text = document.createTextNode(contactName);
 	contactNameP.appendChild(text);
 
+	let imageMess = document.createElement("img");
+	let id = "imageMess" + contactName;
+	imageMess.setAttribute("id", id);
+	imageMess.setAttribute("class", 'contactImages');
+	imageMess.setAttribute("src", 'images/back.jpg');
+
+	let imageWizz = document.createElement("img");
+	imageWizz.setAttribute("class", 'contactImages');
+	imageWizz.setAttribute("src", 'images/back.jpg');
+
+	newContact.appendChild(contactAvatar);
 	newContact.appendChild(contactNameP);
+	newContact.appendChild(imageMess);
+	newContact.appendChild(imageWizz);
 
 	let container = document.getElementById("zone_contacts");
 	container.appendChild(newContact);
@@ -187,7 +206,7 @@ function afficherConvo(contactName){
 	pTitle.setAttribute("style", "margin-bottom:0px;")
 	pTitle.innerHTML = contactName;
 
-
+	document.getElementById("selectedConvo_writeSend").style.display = "block";
 	currentConvo = loadConvo(contactName);
 	updateConvoMessages(currentConvo);
 }
@@ -211,7 +230,7 @@ function updateConvoMessages(convo){
 
 		//Pour déterminer l'alignement gauche droite du message
 		if(currentMessage.senderId == currentUserData.email){
-			
+
 			ajouterMessage(1, currentMessage);
 		}else{
 			ajouterMessage(0, currentMessage);
@@ -220,6 +239,7 @@ function updateConvoMessages(convo){
 	}
 
 	container.scrollTop = container.scrollHeight;
+	
 }
 
 
@@ -281,4 +301,53 @@ function ajouterTimeStamp(date){
 	let clear = document.createElement("div");
 	clear.setAttribute("class", "vider");
 	container.appendChild(clear);
+}
+
+//Réagit au onclick du bouton et envoie le contenu du text area
+function sendMessage(){
+	let container = document.getElementById("message_content");
+	let content = container.value;
+
+	if(content.trim().length != 0){
+		let tempMessage;
+		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages");
+		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
+		let key = refMessages.key;
+	
+		let date = new Date();
+		let dateOutput;
+		
+		if((date.getMonth()+1) < 10){
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}else{
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}
+		
+		let newMessageToWrite={
+			id: key, 
+			convoId: currentConvo.id,
+			content:content,
+			senderId: currentUserData.email,
+			timeStamp: dateOutput,
+			type: "text",
+		}
+		refMessages.push(newMessageToWrite);
+	
+		refTextHint.set(content);
+
+		container.value = "";
+
+		tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text");
+		ajouterMessage(1, tempMessage);
+		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	}
 }
