@@ -210,16 +210,32 @@ function afficherConvo(contactName){
 
 	document.getElementById("selectedConvo_writeSend").style.display = "block";
 	currentConvo = loadConvo(contactName);
-	updateConvoMessages(currentConvo);
 }
 
 //Pour aller loader la convo sélectionnée
 function loadConvo(contactName){
-	for(let i=0;i<myConvosList.length;i++){
-		if(myConvosList[i].user2.username == contactName){
-			return myConvosList[i];
+	convosRef.on('value', function(snapshot) {
+		convosData = snapshot.val();
+		let contactId;
+
+		//Pour trouver le user correspondant au contact
+		for(data2 in usersData){
+			if(usersData[data2].username == contactName){
+				contactId = data2;
+			}
 		}
-	}
+		
+		for(data in convosData){
+			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
+				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
+				updateConvoMessages(currentConvo);
+				
+			}else if(convosData[data].idUser2 == currentUser.email && convosData[data].idUser1 == usersData[contactId].email){
+				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
+				updateConvoMessages(currentConvo);
+			}
+		}
+	});
 }
 
 //Va chercher les messages dans la conversations et les affiche
@@ -256,7 +272,6 @@ function ajouterMessage(position, message){
 		lastTime = new Date(lastMessageCreated.timeStamp.substr(0, 10));
 	
 		if(nowTime > lastTime){
-			console.log(nowTime);
 			ajouterTimeStamp(nowTime);
 		}
 	}
