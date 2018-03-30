@@ -127,6 +127,8 @@ function addConvoToList(contactName, textHint){
 	zoneTexte.appendChild(convoContact);
 	
 	let convoTextHint = document.createElement("p");
+	let id = "textHint-" + contactName;
+	convoTextHint.setAttribute("id", id)
 	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;")
 	let text2 = document.createTextNode(textHint);
 	convoTextHint.appendChild(text2);
@@ -349,5 +351,6 @@ function sendMessage(){
 		tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text");
 		ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+		document.getElementById("textHint-"+currentContactName).innerHTML = content;
 	}
 }
