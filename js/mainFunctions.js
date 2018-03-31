@@ -209,12 +209,12 @@ function afficherConvo(contactName){
 	pTitle.innerHTML = contactName;
 
 	document.getElementById("selectedConvo_writeSend").style.display = "block";
-	currentConvo = loadConvo(contactName);
+	loadConvo(contactName);
 }
 
 //Pour aller loader la convo sélectionnée
 function loadConvo(contactName){
-	convosRef.on('value', function(snapshot) {
+	convosRef.once('value', function(snapshot) {
 		convosData = snapshot.val();
 		let contactId;
 
@@ -248,7 +248,6 @@ function updateConvoMessages(convo){
 
 		//Pour déterminer l'alignement gauche droite du message
 		if(currentMessage.senderId == currentUserData.email){
-
 			ajouterMessage(1, currentMessage);
 		}else{
 			ajouterMessage(0, currentMessage);
@@ -263,6 +262,7 @@ function updateConvoMessages(convo){
 
 //Pour créer un message par DOM
 function ajouterMessage(position, message){
+	console.log("allo");
 	//Détermine si on ajoute la date
 	nowTime = new Date(message.timeStamp.substr(0, 10));
 	

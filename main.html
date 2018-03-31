@@ -28,6 +28,14 @@
 			readConvos();
 
 			document.getElementById("default").click();
+			document.getElementById("message_content").onkeyup = function(event){
+				var key = event.keyCode;
+
+				// If the user has pressed enter
+				if (key === 13) {
+					sendMessage();
+				}
+			}
 		}
 	</script>
 
