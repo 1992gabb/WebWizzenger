@@ -205,7 +205,6 @@ function addContactToList(contactName){
 //Affiche la conversation dans l'espace de droite
 function afficherConvo(contactName){
 	let pTitle = document.getElementById("p_title");
-	pTitle.setAttribute("style", "margin-bottom:0px;")
 	pTitle.innerHTML = contactName;
 
 	document.getElementById("selectedConvo_writeSend").style.display = "block";
@@ -262,7 +261,6 @@ function updateConvoMessages(convo){
 
 //Pour créer un message par DOM
 function ajouterMessage(position, message){
-	console.log("allo");
 	//Détermine si on ajoute la date
 	nowTime = new Date(message.timeStamp.substr(0, 10));
 	
@@ -367,5 +365,56 @@ function sendMessage(){
 		ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = content;
+	}
+}
+
+	//Réagit au onclick du bouton wizz et envoie un wizz!
+function sendWizz(){
+	let container = document.getElementById("message_content");
+	let content = "WIZZ";
+
+	if(content.trim().length != 0){
+		let tempMessage;
+		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages");
+		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
+		let key = refMessages.key;
+	
+		let date = new Date();
+		let dateOutput;
+		
+		if((date.getMonth()+1) < 10){
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}else{
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}
+		
+		let newMessageToWrite={
+			id: key, 
+			convoId: currentConvo.id,
+			content:'WIZZ',
+			senderId: currentUserData.email,
+			timeStamp: dateOutput,
+			type: "wizz",
+			wizzTriggered : "false"
+		}
+		refMessages.push(newMessageToWrite);
+	
+		refTextHint.set(content);
+
+		container.value = "";
+
+		tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text");
+		ajouterMessage(1, tempMessage);
+		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
 	}
 }

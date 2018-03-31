@@ -308,7 +308,7 @@ footer{
 
 #selectedConvo_messages{
 	width:100%;
-	height:793px;
+	height:772px;
 	background-color:white;
 	overflow:scroll; 
 	overflow-x: hidden;
@@ -316,7 +316,7 @@ footer{
 
 #selectedConvo_writeSend{
 	width:100%;
-	height:3%;
+	height:60px;
 	display:none;
 }
 
@@ -327,6 +327,7 @@ footer{
 	height:50px;
 	margin:2px 0px;
 	z-index: 1;
+	cursor:pointer;
 }
 
 .conversationInList:hover{
@@ -379,6 +380,7 @@ footer{
 	width:100%;
 	margin:2px 0px;
 	background-color:#d3d3d3;
+	cursor:pointer;
 }
 
 .contactAvatar{
@@ -439,17 +441,49 @@ footer{
 	text-align:center;
 }
 
-#button_send{
+#button_send, #button_wizz{
 	position:relative;
-	float:right;
-	margin-top:-65px;
-	width:130px;
-	height:60px;
+	top:-50px;
+	width:30px;
+	height:30px;
+	background-repeat: no-repeat;
+	background-size: 100%;
+	background-color: transparent;
+	outline: none;
+	border:none;
 }
 
+#button_send{
+	left:1450px;
+	background-image:url("../images/ic_send_black.png");
+}
 
+#button_wizz{
+	left:1440px;
+	background-image:url("../images/ic_wizz.png");
+}
 
+#button_send:hover, #button_wizz:hover{
+	cursor:pointer
+}
 
+#ic_info{
+	width:25px;
+	height:25px;
+	float:left; 
+	margin:25px 20px 0px 630px;
+}
+
+#ic_settings{
+	width:25px;
+	height:25px;
+	float:left; 
+	margin:25px 25px;
+}
+
+#ic_info:hover, #ic_settings:hover{
+	cursor:pointer;
+}
 
 
 
