@@ -33,7 +33,7 @@
 
 				// If the user has pressed enter
 				if (key === 13) {
-					sendMessage();
+					sendMessage(1);
 				}
 			}
 		}
@@ -43,6 +43,7 @@
 
 	<div id = "zone_browsing">
 			<header id = "main_header">
+					<button id = "button_logout" onclick="logout()">Sortir</button>
 				<p style="text-align:center;">Wizzenger</p>
 			</header>
 			<div id = "zone_recherche">
@@ -83,7 +84,7 @@
 
 				</div>
 				<button id = "button_wizz" onclick="sendWizz()"></button>
-				<button id = "button_send" onclick="sendMessage()"></button>
+				<button id = "button_send" onclick="sendMessage(0)"></button>
 			</div>
 		</div>
 		<footer>Tous Droits Réservés.                Créé par Gabriel Bombardier                  10 Février 2018</footer>

@@ -18,6 +18,7 @@ let divTitle;
 let divMessages;
 let divEntry;
 let lastMessageCreated;
+let done = false;
 
 
 
@@ -211,24 +212,24 @@ function afficherConvo(contactName){
 	loadConvo(contactName);
 }
 
+//**Modifier pour qu'il n'aille pas tout loader a chaque fois */
 //Pour aller loader la convo sélectionnée
 function loadConvo(contactName){
-	convosRef.once('value', function(snapshot) {
+	convosRef.on('value', function(snapshot) {
 		convosData = snapshot.val();
 		let contactId;
-
+		
 		//Pour trouver le user correspondant au contact
 		for(data2 in usersData){
 			if(usersData[data2].username == contactName){
 				contactId = data2;
 			}
 		}
-		
+
 		for(data in convosData){
 			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
 				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
 				updateConvoMessages(currentConvo);
-				
 			}else if(convosData[data].idUser2 == currentUser.email && convosData[data].idUser1 == usersData[contactId].email){
 				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
 				updateConvoMessages(currentConvo);
@@ -237,25 +238,37 @@ function loadConvo(contactName){
 	});
 }
 
+//**Modifier pour qu'il n'aille pas tout loader a chaque fois */
 //Va chercher les messages dans la conversations et les affiche
 function updateConvoMessages(convo){
 	let container = document.getElementById("selectedConvo_messages");
 	container.innerHTML = "";
-
+	let currentMessage;
+	console.log("update");
+	
 	for(id in convo.messages){
-		let currentMessage = convo.messages[id];
+		currentMessage = convo.messages[id];
 
-		//Pour déterminer l'alignement gauche droite du message
-		if(currentMessage.senderId == currentUserData.email){
-			ajouterMessage(1, currentMessage);
+		if(lastMessageCreated == null){
+			if(currentMessage.senderId == currentUserData.email){
+				ajouterMessage(1, currentMessage);
+			}else{
+				ajouterMessage(0, currentMessage);
+			}
 		}else{
-			ajouterMessage(0, currentMessage);
+			if(currentMessage.id != lastMessageCreated.id){
+				if(currentMessage.senderId == currentUserData.email){
+					ajouterMessage(1, currentMessage);
+				}else{
+					ajouterMessage(0, currentMessage);
+				}
+			}
 		}
 		lastMessageCreated = currentMessage;
 	}
 
 	container.scrollTop = container.scrollHeight;
-	
+	done = true;
 }
 
 
@@ -319,13 +332,20 @@ function ajouterTimeStamp(date){
 }
 
 //Réagit au onclick du bouton et envoie le contenu du text area
-function sendMessage(){
+function sendMessage(enterRequest){
 	let container = document.getElementById("message_content");
-	let content = container.value;
+	let content;
+	let str = container.value;
+
+	if(enterRequest == 0){
+		content = str;
+	}else{
+		content = str.substr(0,str.length-1);
+	}
 
 	if(content.trim().length != 0){
 		let tempMessage;
-		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages");
+		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
 		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
 		let key = refMessages.key;
 	
@@ -346,7 +366,7 @@ function sendMessage(){
 				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
 			}
 		}
-		
+
 		let newMessageToWrite={
 			id: key, 
 			convoId: currentConvo.id,
@@ -355,14 +375,14 @@ function sendMessage(){
 			timeStamp: dateOutput,
 			type: "text",
 		}
-		refMessages.push(newMessageToWrite);
+		refMessages.set(newMessageToWrite);
 	
 		refTextHint.set(content);
 
 		container.value = "";
 
-		tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text");
-		ajouterMessage(1, tempMessage);
+		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
+		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = content;
 	}
@@ -375,8 +395,9 @@ function sendWizz(){
 
 	if(content.trim().length != 0){
 		let tempMessage;
-		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages");
+		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
 		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
+		let refTime = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
 		let key = refMessages.key;
 	
 		let date = new Date();
@@ -406,15 +427,26 @@ function sendWizz(){
 			type: "wizz",
 			wizzTriggered : "false"
 		}
-		refMessages.push(newMessageToWrite);
+		refMessages.set(newMessageToWrite);
 	
 		refTextHint.set(content);
+		refTextHint.set(dateOutput);
 
 		container.value = "";
 
-		tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text");
-		ajouterMessage(1, tempMessage);
+		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
+		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
 	}
+}
+
+function logout(){
+	firebase.auth().signOut().then(function() {
+		// Sign-out successful.
+		document.location.href = "index.html";
+	  }, function(error) {
+		// An error happened.
+	  });
+	
 }
