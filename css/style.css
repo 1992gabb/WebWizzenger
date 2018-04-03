@@ -4,6 +4,10 @@
 	padding: 0;
 }
 
+html{
+	height:100%;
+}
+
 /* ---------------------- Les Fonts ----------------------   */
 @font-face{
 	font-family: "Dosis-Regular";
@@ -218,32 +222,40 @@ footer{
 	margin:auto;
 	font-family: "Raleway-Regular";
 	background-color:white;
+	display: grid;
+	grid-template-columns: 20% 80%;
+	grid-template-rows: 10% 90%;
+	overflow:hidden;
 }
 
 #zone_browsing{
-	width:20%;
 	height:100%;
 	float:left;
 	background-color:rgba(255,255,255,0.5);
+	border-right: 1px solid #ccc;
+	grid-column: 1/2;
+	grid-row:1/3;
 }
 
 #zone_selectedConvo{
-	width:80%;
 	height:100%;
 	float:left;
+	grid-column: 2/3;
+	grid-row:1/3;
 }
 
 #main_header{
 	width:100%;
-	height: 4.1%;
+	height:8%;
 	margin:auto;
 	color:#E63946;
 	background-color:rgba(255,255,255,0.5);
+	border-bottom: 1px solid #ccc;
 }
 
 #zone_recherche{
 	width:100%;
-	height: 4.2%;
+	height: 8%;
 	background-color:rgba(255,255,255,0.5);
 }
 
@@ -277,9 +289,9 @@ footer{
 #zone_convos{
     display: none;
     padding: 4px 12px;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
 	border-top: none;
-	height:800px;
+	height:78%;
 	overflow:scroll; 
 	overflow-x: hidden;
 	overflow-y: hidden;
@@ -288,27 +300,28 @@ footer{
 #zone_contacts{
     display: none;
     padding: 6px 12px;
-    border: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
 	border-top: none;
 	overflow:scroll; 
 	overflow-x: hidden;
 	overflow-y: hidden;
-	height:800px;
+	height:78%;
 }
 /* Fin pour les tabs */
 
 #selectedConvo_title{
 	width:100%;
-	height:78px;
+	height:8%;
 	line-height: 78px;
 	background-color:#8bb372;
 	padding: 0px 14px 0px 15px;
 	color:white;
+	border-bottom: 1px solid #ccc;
 }
 
 #selectedConvo_messages{
 	width:100%;
-	height:772px;
+	height:83%;
 	background-color:white;
 	overflow:scroll; 
 	overflow-x: hidden;
@@ -316,7 +329,7 @@ footer{
 
 #selectedConvo_writeSend{
 	width:100%;
-	height:60px;
+	height:6.5%;
 	display:none;
 }
 
