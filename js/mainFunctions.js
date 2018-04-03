@@ -104,9 +104,11 @@ function readContacts(){
 			}
 		}
 
+		addMessageToContactList();
 		for(let i=0;i<myContactsList.length;i++){
 			addContactToList(myContactsList[i].user2.username);
 		}
+
 	});
 }
 
@@ -170,6 +172,25 @@ function addMessageToConvoList(){
 	container.appendChild(newConvo);
 }
 
+//Pour ajouter un petit message dans la liste de convos
+function addMessageToContactList(){
+	let newConvo = document.createElement("div");
+	newConvo.setAttribute("class", "contactInList");
+
+	let addButton = document.createElement("img");
+	addButton.setAttribute("id", 'contact_addButton');
+	addButton.setAttribute("src", 'images/button_add.png');
+
+	let removeButton = document.createElement("img");
+	removeButton.setAttribute("id", 'contact_removeButton');
+	removeButton.setAttribute("src", 'images/button_remove.png');
+	
+	newConvo.appendChild(addButton);
+	newConvo.appendChild(removeButton);
+
+	let container = document.getElementById("zone_contacts");
+	container.appendChild(newConvo);
+}
 //Pour créer des div pour chacun des contacts
 function addContactToList(contactName){
 	let newContact = document.createElement("div");
@@ -180,18 +201,18 @@ function addContactToList(contactName){
 	contactAvatar.setAttribute("src", 'images/back.jpg');
 
 	let contactNameP = document.createElement("p");
-	contactNameP.setAttribute("style", "width:35%;height:100%;margin-left:10px;")
+	contactNameP.setAttribute("style", "width:48%;height:100%;margin-left:10px;")
 	let text = document.createTextNode(contactName);
 	contactNameP.appendChild(text);
 
 	let imageMess = document.createElement("img");
 	let id = "imageMess" + contactName;
 	imageMess.setAttribute("id", id);
-	imageMess.setAttribute("class", 'contactImages');
+	imageMess.setAttribute("class", 'contactImagesMess');
 	imageMess.setAttribute("src", 'images/ic_mess.png');
 
 	let imageWizz = document.createElement("img");
-	imageWizz.setAttribute("class", 'contactImages');
+	imageWizz.setAttribute("class", 'contactImagesWizz');
 	imageWizz.setAttribute("src", 'images/ic_wizz.png');
 
 	newContact.appendChild(contactAvatar);
@@ -229,7 +250,7 @@ function afficherConvo(contactName){
 	loadConvo(contactName);
 }
 
-//Affiche la conversation dans l'espace de droite
+//Affiche le contact dans l'espace de droite
 function afficherContact(contactName){
 	let pTitle = document.getElementById("p_title");
 	pTitle.innerHTML = contactName;
@@ -238,7 +259,17 @@ function afficherContact(contactName){
 	document.getElementById("selectedConvo_messages").style.display = "none";
 	document.getElementById("selectedContactInfo").style.display = "block";
 
-	loadConvo(contactName);
+	let currentContact;
+	for(data in usersData){
+		if(usersData[data].username == contactName){
+			currentContact = usersData[data];
+		}
+	}
+
+	// document.getElementById("selectedContact_avatar")
+	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
+	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
+
 }
 
 //**Modifier pour qu'il n'aille pas tout loader a chaque fois */

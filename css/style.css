@@ -51,7 +51,7 @@ h1{
 	
 }
 
-#login{
+#login_zone{
 	color:black;
 	text-align: center;
 	width:400px;
@@ -82,11 +82,10 @@ input[type=text], input[type=password] {
 	font-family:"Raleway-Regular";
 }
 
-#btn_submit {
+#btn_submit, #btn_register{
 	height:30px;
 	width:150px;
 	margin:60px auto 5px auto;
-    /* border:2px solid #E63946;  */
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
@@ -95,13 +94,7 @@ input[type=text], input[type=password] {
 }
 
 #btn_register{
-	height:30px;
-	width:150px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	font-family:"Raleway-Regular";
-	font-size:1em;
-	background-color:#F1FAEE;
+	margin:0;
 }
 
 #zone_boutons_index{
@@ -111,16 +104,14 @@ input[type=text], input[type=password] {
 	margin:15px 31%;
 }
 
-#ligne1{
+#ligne1, #ligne2{
 	font-size:0.7em;
 	margin:60px 60px 0px 40px;
 	float:left;
 }
 
 #ligne2{
-	font-size:0.7em;
 	margin:20px 20px 0px 40px;
-	float:left;
 }
 
 .popup {
@@ -249,6 +240,8 @@ footer{
 	height:8%;
 	margin:auto;
 	color:#E63946;
+	font-size:24px;
+	line-height:25px;
 	background-color:rgba(255,255,255,0.5);
 	border-bottom: 1px solid #ccc;
 }
@@ -286,7 +279,7 @@ footer{
     background-color: #ccc;
 }
 
-#zone_convos{
+#zone_convos, #zone_contacts{
     display: none;
     padding: 4px 12px;
     border-bottom: 1px solid #ccc;
@@ -298,21 +291,14 @@ footer{
 }
 
 #zone_contacts{
-    display: none;
     padding: 6px 12px;
-    border-bottom: 1px solid #ccc;
-	border-top: none;
-	overflow:scroll; 
-	overflow-x: hidden;
-	overflow-y: hidden;
-	height:78%;
 }
 /* Fin pour les tabs */
 
 #selectedConvo_title{
 	width:100%;
 	height:8%;
-	line-height: 78px;
+	line-height: 73px;
 	background-color:#8bb372;
 	padding: 0px 14px 0px 15px;
 	color:white;
@@ -321,7 +307,7 @@ footer{
 
 #selectedConvo_messages{
 	width:100%;
-	height:83%;
+	height:83.5%;
 	background-color:white;
 	overflow:scroll; 
 	overflow-x: hidden;
@@ -344,9 +330,6 @@ footer{
 }
 
 .conversationInList:hover{
-	float:left;
-	width:100%;
-	margin:2px 0px;
 	background-color:#d3d3d3;
 }
 
@@ -358,7 +341,7 @@ footer{
 	border-radius: 50%;
 }
 
-.conversationsInList_texte{
+.conversationsInList_texte, .conversationsInList_texte2{
 	float:left;
 	width:73.5%;
 	padding-top:5px;
@@ -367,9 +350,7 @@ footer{
 }
 
 .conversationsInList_texte2{
-	float:left;
 	width:100%;
-	margin-left:5px;
 }
 
 .conversationInList p{
@@ -389,14 +370,11 @@ footer{
 }
 
 .contactInList:hover{
-	float:left;
-	width:100%;
-	margin:2px 0px;
 	background-color:#d3d3d3;
 	cursor:pointer;
 }
 
-.contactAvatar{
+.contactAvatar, .contactImages, .contactImagesMess, .contactImagesWizz{
 	float:left;
 	display:block;
 	width:15%;
@@ -405,12 +383,35 @@ footer{
 }
 
 .contactImages{
+	margin-left:15px;
+}
+
+.contactImagesMess{
+	width:10%;
+	height:75%;
+	margin-left:15px;
+	margin-top:8px;
+}
+
+.contactImagesWizz{
+	width:10%;
+	height:75%;
+	margin-left:15px;
+	margin-top:7px;
+}
+
+#contact_addButton, #contact_removeButton{
 	float:left;
 	display:block;
 	width:15%;
 	height:100%;
-	margin-left:15px;
+	margin-left:55px;
 	border-radius: 50%;
+	background-color: #8bb372;
+}
+
+#contact_removeButton{
+	margin-left:145px;
 }
 
 .conversationsInList_texte{
@@ -480,7 +481,7 @@ footer{
 	cursor:pointer
 }
 
-#ic_info{
+#ic_info, #ic_settings{
 	width:25px;
 	height:25px;
 	float:left; 
@@ -488,9 +489,6 @@ footer{
 }
 
 #ic_settings{
-	width:25px;
-	height:25px;
-	float:left; 
 	margin:25px 25px;
 }
 
@@ -502,6 +500,31 @@ footer{
 	display: none;
 }
 
+#selectedContact_avatar{
+	width: 25%;
+	height:350px;
+	margin:20px 37.5% 20px 37.5%;
+	border-radius: 50%;
+}
+
+#selectedContact_phone, #selectedContact_email, #selectedContact_removeZone{
+	width:300px;
+	margin:40px auto 25px auto;
+}
+
+#selectedContact_email{
+	margin:25px auto;
+}
+
+#selectedContact_removeZone{
+	margin:25px auto;
+}
+
+#selectedContact_removeButton{
+	cursor: pointer;
+	height:50px;
+	width:50px;
+}
 
 
 
