@@ -498,6 +498,9 @@ footer{
 	cursor:pointer;
 }
 
+#selectedContactInfo{
+	display: none;
+}
 
 
 

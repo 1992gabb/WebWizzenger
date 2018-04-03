@@ -188,11 +188,11 @@ function addContactToList(contactName){
 	let id = "imageMess" + contactName;
 	imageMess.setAttribute("id", id);
 	imageMess.setAttribute("class", 'contactImages');
-	imageMess.setAttribute("src", 'images/back.jpg');
+	imageMess.setAttribute("src", 'images/ic_mess.png');
 
 	let imageWizz = document.createElement("img");
 	imageWizz.setAttribute("class", 'contactImages');
-	imageWizz.setAttribute("src", 'images/back.jpg');
+	imageWizz.setAttribute("src", 'images/ic_wizz.png');
 
 	newContact.appendChild(contactAvatar);
 	newContact.appendChild(contactNameP);
@@ -201,6 +201,21 @@ function addContactToList(contactName){
 
 	let container = document.getElementById("zone_contacts");
 	container.appendChild(newContact);
+
+	contactAvatar.onclick = function(event){
+		afficherContact(contactName);
+	}
+	contactNameP.onclick = function(event){
+		afficherContact(contactName);
+	}
+	imageMess.onclick = function(event){
+		afficherConvo(contactName);
+	}
+
+	imageWizz.onclick = function(event){
+		afficherConvo(contactName);
+		sendWizz();
+	}
 }
 
 //Affiche la conversation dans l'espace de droite
@@ -208,7 +223,21 @@ function afficherConvo(contactName){
 	let pTitle = document.getElementById("p_title");
 	pTitle.innerHTML = contactName;
 
+	document.getElementById("selectedContactInfo").style.display = "none";
+	document.getElementById("selectedConvo_messages").style.display = "block";
 	document.getElementById("selectedConvo_writeSend").style.display = "block";
+	loadConvo(contactName);
+}
+
+//Affiche la conversation dans l'espace de droite
+function afficherContact(contactName){
+	let pTitle = document.getElementById("p_title");
+	pTitle.innerHTML = contactName;
+
+	document.getElementById("selectedConvo_writeSend").style.display = "none";
+	document.getElementById("selectedConvo_messages").style.display = "none";
+	document.getElementById("selectedContactInfo").style.display = "block";
+
 	loadConvo(contactName);
 }
 
@@ -430,7 +459,6 @@ function sendWizz(){
 		refMessages.set(newMessageToWrite);
 	
 		refTextHint.set(content);
-		refTextHint.set(dateOutput);
 
 		container.value = "";
 
