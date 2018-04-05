@@ -19,6 +19,11 @@ let divMessages;
 let divEntry;
 let lastMessageCreated;
 let done = false;
+let convoAvatar;
+
+//Pour le storage
+let storage = firebase.storage();
+let storageRef = storage.ref('avatars/');
 
 
 
@@ -117,9 +122,10 @@ function addConvoToList(contactName, textHint){
 	let newConvo = document.createElement("div");
 	newConvo.setAttribute("class", "conversationInList");
 	
-	let convoAvatar = document.createElement("img");
+	convoAvatar = document.createElement("img");
 	convoAvatar.setAttribute("class", 'convoAvatar');
-	convoAvatar.setAttribute("src", 'images/back.jpg');
+	convoAvatar.setAttribute("src", 'images/default_avatar.png');
+	getAvatar(contactName, convoAvatar);
 
 	let zoneTexte = document.createElement("div");
 	zoneTexte.setAttribute("class", "conversationsInList_texte");
@@ -151,6 +157,38 @@ function addConvoToList(contactName, textHint){
 		document.getElementById("message_content").value = "";
 		afficherConvo(currentContactName);
 	}
+}
+
+//Va chercher la photo associé a un client
+function getAvatar(contactName, currentDiv){
+
+	let currentContact;
+	for(data in usersData){
+		if(usersData[data].username == contactName){
+			currentContact = usersData[data];
+		}
+	}
+
+	// Get the download URL
+	let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
+	currentAvatarRef.getDownloadURL().then(function(url) {
+		currentDiv.setAttribute("src", url);
+  	}).catch(function(error) {
+	switch (error.code) {
+	  case 'storage/object_not_found':
+		// File doesn't exist
+		break;
+	  case 'storage/unauthorized':
+		// User doesn't have permission to access the object
+		break;
+	  case 'storage/canceled':
+		// User canceled the upload
+		break;
+	  case 'storage/unknown':
+		// Unknown error occurred, inspect the server response
+		break;
+	}
+  });
 }
 
 //Pour ajouter un petit message dans la liste de convos
@@ -191,6 +229,7 @@ function addMessageToContactList(){
 	let container = document.getElementById("zone_contacts");
 	container.appendChild(newConvo);
 }
+
 //Pour créer des div pour chacun des contacts
 function addContactToList(contactName){
 	let newContact = document.createElement("div");
@@ -198,7 +237,8 @@ function addContactToList(contactName){
 
 	let contactAvatar = document.createElement("img");
 	contactAvatar.setAttribute("class", 'contactImages');
-	contactAvatar.setAttribute("src", 'images/back.jpg');
+	contactAvatar.setAttribute("src", 'images/default_avatar.png');
+	getAvatar(contactName, contactAvatar);
 
 	let contactNameP = document.createElement("p");
 	contactNameP.setAttribute("style", "width:48%;height:100%;margin-left:10px;")
@@ -330,7 +370,6 @@ function updateConvoMessages(convo){
 	container.scrollTop = container.scrollHeight;
 	done = true;
 }
-
 
 //Pour créer un message par DOM
 function ajouterMessage(position, message){
