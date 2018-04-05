@@ -138,8 +138,8 @@ function addConvoToList(contactName, textHint){
 	convoTextHint.setAttribute("id", id)
 	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;");
 
-	if(textHint.length >=25){
-		let newTextHint = textHint.substr(0,22) + "...";
+	if(textHint.length >=45){
+		let newTextHint = textHint.substr(0,42) + "...";
 		text2 = document.createTextNode(newTextHint);
 	}else{
 		text2 = document.createTextNode(textHint);
@@ -490,8 +490,8 @@ function sendMessage(enterRequest){
 		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 
-		if(content.length >=25){
-			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,22) + "...";
+		if(content.length >=45){
+			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
 		}else{
 			document.getElementById("textHint-"+currentContactName).innerHTML = content;
 		}
