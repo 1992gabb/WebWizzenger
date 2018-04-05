@@ -136,8 +136,15 @@ function addConvoToList(contactName, textHint){
 	let convoTextHint = document.createElement("p");
 	let id = "textHint-" + contactName;
 	convoTextHint.setAttribute("id", id)
-	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;")
-	let text2 = document.createTextNode(textHint);
+	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;");
+
+	if(textHint.length >=25){
+		let newTextHint = textHint.substr(0,22) + "...";
+		text2 = document.createTextNode(newTextHint);
+	}else{
+		text2 = document.createTextNode(textHint);
+	}
+	
 	convoTextHint.appendChild(text2);
 	zoneTexte.appendChild(convoTextHint);
 
@@ -483,8 +490,8 @@ function sendMessage(enterRequest){
 		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 
-		if(content.length >=20){
-			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,17) + "...";
+		if(content.length >=25){
+			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,22) + "...";
 		}else{
 			document.getElementById("textHint-"+currentContactName).innerHTML = content;
 		}
