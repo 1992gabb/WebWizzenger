@@ -410,12 +410,12 @@ function ajouterMessage(position, message){
 	//a gauche
 	if(position == 0){
 		newMessage.style.cssFloat = "left";
-		newMessage.style.backgroundColor = "#d3d3d3";
+		newMessage.style.backgroundColor = "#eaeaea";
 	}
 	//a droite
 	else if (position == 1){
 		newMessage.style.cssFloat = "right";
-		newMessage.style.backgroundColor = "#8bb372";
+		newMessage.style.backgroundColor = "#bbddaa";
 	}
 }
 
