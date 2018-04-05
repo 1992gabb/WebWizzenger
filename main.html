@@ -36,6 +36,12 @@
 					sendMessage(1);
 				}
 			}
+			document.getElementById("ic_info").onclick = function(event){
+				if(document.getElementById("p_title").innerHTML != "Sélectionnez une conversation pour commencer!"){
+					afficherContact(document.getElementById("p_title").innerHTML);
+				}
+				
+			}
 		}
 	</script>
 
@@ -81,7 +87,7 @@
 
 			<div id = "selectedContactInfo">
 				<!-- Populé par le code javascript (voir afficherContact) -->
-				<img id = "selectedContact_avatar" src = "images/back.jpg">
+				<img id = "selectedContact_avatar" src = "images/default_avatar.png">
 				<div id= "selectedContact_email">Courriel: </div>
 				<div id= "selectedContact_phone">Téléphone: </div>
 				<div id="selectedContact_removeZone">

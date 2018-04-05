@@ -26,8 +26,6 @@ let storage = firebase.storage();
 let storageRef = storage.ref('avatars/');
 
 
-
-
 //Obtient les informations des conversations et appelle ensuite readUsers pour trouver les noms des contacts.
 function readConvos(){
 	convosRef.once('value', function(snapshot) {
@@ -307,6 +305,7 @@ function afficherContact(contactName){
 	}
 
 	// document.getElementById("selectedContact_avatar")
+	getAvatar(contactName, document.getElementById("selectedContact_avatar"));
 	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
 	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
 
@@ -483,7 +482,13 @@ function sendMessage(enterRequest){
 		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
 		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-		document.getElementById("textHint-"+currentContactName).innerHTML = content;
+
+		if(content.length >=20){
+			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,17) + "...";
+		}else{
+			document.getElementById("textHint-"+currentContactName).innerHTML = content;
+		}
+		
 	}
 }
 
