@@ -78,8 +78,6 @@ function readUsers(){
 //Pour mettre les conversations en ordre du plus récent. Merci : https://en.proft.me/2015/11/14/sorting-array-objects-number-string-date-javascrip/
 function sortConvoList(){
 	myConvosList.sort(function(a,b){
-		console.log(a.lastMessageDate);
-		console.log(b.lastMessageDate);
 		var c = new Date(a.lastMessageDate).getTime();
 		var d = new Date(b.lastMessageDate).getTime();
 		return d-c;
@@ -368,7 +366,6 @@ function updateConvoMessages(convo){
 	let container = document.getElementById("selectedConvo_messages");
 	container.innerHTML = "";
 	let currentMessage;
-	console.log("update");
 	
 	for(id in convo.messages){
 		currentMessage = convo.messages[id];
@@ -445,12 +442,53 @@ function ajouterMessage(position, message){
 	if(position == 0){
 		newMessage.style.cssFloat = "left";
 		newMessage.style.backgroundColor = "#eaeaea";
+
+		if(message.content == "WIZZ" && message.wizzTriggered == "false"){
+			let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + message.id + "/wizzTriggered");
+			refCurrentMessage.set("true");
+			wizzAnimation();
+		}else if(message.content == "woush" && message.wizzTriggered == "false"){
+			let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + message.id + "/wizzTriggered");
+			refCurrentMessage.set("true");
+			soundAnimation("woush");
+		}else if(message.content == "blur" && message.wizzTriggered == "false"){
+			let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + message.id + "/wizzTriggered");
+			refCurrentMessage.set("true");
+			soundAnimation("blur");
+		}
 	}
 	//a droite
 	else if (position == 1){
 		newMessage.style.cssFloat = "right";
 		newMessage.style.backgroundColor = "#bbddaa";
 	}
+
+	
+}
+
+function wizzAnimation(){
+	let wizzSound = new Audio("sounds/wizzSound.mp3");
+	wizzSound.play();
+	let container = document.getElementById("main_body");
+	container.style.animation = "shake 0.5s";
+	console.log(container.style.animation);
+	container.style.animationIterationCount = "infinite";
+	setTimeout(function() {
+		container.style.animation = '';
+		wizzSound.pause();
+		wizzSound.currentTime = 0;
+	}, 2000);
+	
+}
+
+function soundAnimation(name){
+	let path = "sounds/" + name + "Sound.mp3";
+	let sound = new Audio(path);
+	sound.play();
+	setTimeout(function() {
+		sound.pause();
+		sound.currentTime = 0;
+	}, 2000);
 }
 
 function ajouterTimeStamp(date){
@@ -583,6 +621,68 @@ function sendWizz(){
 		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+		wizzAnimation();
+	}
+}
+
+//Réagit au onclick du bouton son et envoie un son!
+function sendSound(number){
+	let container = document.getElementById("message_content");
+	let content;
+
+	if(number == 0){
+		content = "prout";
+	}else if(number == 1){
+		content = "woush";
+	}else if (number == 2){
+		content = "blur";
+	}
+
+	if(content.trim().length != 0){
+		let tempMessage;
+		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
+		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
+		let refTime = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
+		let key = refMessages.key;
+	
+		let date = new Date();
+		let dateOutput;
+		
+		if((date.getMonth()+1) < 10){
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}else{
+			if(date.getDate()<10){
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}else{
+				
+				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
+			}
+		}
+		
+		let newMessageToWrite={
+			id: key, 
+			convoId: currentConvo.id,
+			content:content,
+			senderId: currentUserData.email,
+			timeStamp: dateOutput,
+			type: "sound",
+			wizzTriggered : "false"
+		}
+		refMessages.set(newMessageToWrite);
+	
+		refTextHint.set(content);
+
+		container.value = "";
+
+		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
+		//ajouterMessage(1, tempMessage);
+		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+		soundAnimation(content);
 	}
 }
 

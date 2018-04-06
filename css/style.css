@@ -460,7 +460,7 @@ footer{
 	text-align:center;
 }
 
-#button_send, #button_wizz{
+#button_send, #button_wizz, #button_woush, #button_blur{
 	position:relative;
 	top:-50px;
 	width:30px;
@@ -473,16 +473,26 @@ footer{
 }
 
 #button_send{
-	left:1450px;
+	left:1380px;
 	background-image:url("../images/ic_send_black.png");
 }
 
 #button_wizz{
-	left:1440px;
+	left:1360px;
 	background-image:url("../images/ic_wizz.png");
 }
 
-#button_send:hover, #button_wizz:hover{
+#button_woush{
+	left:1360px;
+	background-image:url("../images/woush.png");
+}
+
+#button_blur{
+	left:1290px;
+	background-image:url("../images/blur.png");
+}
+
+#button_send:hover, #button_wizz:hover, #button_woush, #button_blur{
 	cursor:pointer
 }
 
