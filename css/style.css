@@ -442,6 +442,7 @@ footer{
 	margin:5px 5px;
 	border-radius: 25px;
 	width:200px;
+	word-wrap: break-word;
 }
 
 .vider{

@@ -47,7 +47,7 @@ function readUsers(){
 		}
 
 		//Pour créer la liste des conversations
-		convosList = [];
+		myConvosList = [];
 		for(data in convosData){
 			if(convosData[data].idUser1 == currentUser.email){
 				//Pour trouver le user correspondant au contact
@@ -69,6 +69,28 @@ function readUsers(){
 			}
 		}
 
+		createConvoList();
+
+		readContacts();
+	});
+}
+
+//Pour mettre les conversations en ordre du plus récent. Merci : https://en.proft.me/2015/11/14/sorting-array-objects-number-string-date-javascrip/
+function sortConvoList(){
+	myConvosList.sort(function(a,b){
+		console.log(a.lastMessageDate);
+		console.log(b.lastMessageDate);
+		var c = new Date(a.lastMessageDate).getTime();
+		var d = new Date(b.lastMessageDate).getTime();
+		return d-c;
+	});
+}
+
+//Crée la liste de conversations
+function createConvoList(){
+		sortConvoList();
+		document.getElementById("zone_convos").innerHTML = "";
+
 		for(let i=0;i<myConvosList.length;i++){
 			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
 		}
@@ -76,11 +98,7 @@ function readUsers(){
 		if(myConvosList.length<15){
 			addMessageToConvoList();
 		}
-
-		readContacts();
-	});
 }
-
 //Après avoir enregistré le nom des users, ajoute les contacts en lien avec le currentUser
 function readContacts(){
 	contactsRef.once('value', function(snapshot) {
@@ -373,6 +391,15 @@ function updateConvoMessages(convo){
 		lastMessageCreated = currentMessage;
 	}
 
+	//Pour updater le textHint
+	let content = lastMessageCreated.content;
+
+	if(content.length >=45){
+		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
+	}else{
+		document.getElementById("textHint-"+currentContactName).innerHTML = content;
+	}
+
 	container.scrollTop = container.scrollHeight;
 	done = true;
 }
@@ -452,6 +479,7 @@ function sendMessage(enterRequest){
 		let tempMessage;
 		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
 		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
+		let refLastMessage = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
 		let key = refMessages.key;
 	
 		let date = new Date();
@@ -481,13 +509,12 @@ function sendMessage(enterRequest){
 			type: "text",
 		}
 		refMessages.set(newMessageToWrite);
-	
 		refTextHint.set(content);
+		refLastMessage.set(dateOutput);
+
+		readConvos();
 
 		container.value = "";
-
-		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
-		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 
 		if(content.length >=45){
@@ -496,10 +523,11 @@ function sendMessage(enterRequest){
 			document.getElementById("textHint-"+currentContactName).innerHTML = content;
 		}
 		
+		
 	}
 }
 
-	//Réagit au onclick du bouton wizz et envoie un wizz!
+//Réagit au onclick du bouton wizz et envoie un wizz!
 function sendWizz(){
 	let container = document.getElementById("message_content");
 	let content = "WIZZ";
@@ -551,6 +579,7 @@ function sendWizz(){
 	}
 }
 
+//Se déconnecte et retourne à la page de connexion
 function logout(){
 	firebase.auth().signOut().then(function() {
 		// Sign-out successful.
