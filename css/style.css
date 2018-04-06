@@ -441,10 +441,14 @@ footer{
 	padding:10px 15px;
 	margin:5px 5px;
 	border-radius: 25px;
-	width:200px;
+	width: max-content;
 	word-wrap: break-word;
+	justify-content: flex-end;
 }
 
+.one_message p{
+	margin:0;
+}
 .vider{
 	width:100%;
 	clear:both;

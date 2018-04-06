@@ -423,7 +423,14 @@ function ajouterMessage(position, message){
 	newMessage.setAttribute("class", "one_message");
 
 	let zoneTexte = document.createElement("p");
-	zoneTexte.innerHTML = message.content;
+	let txt = message.content;
+
+	
+	if(message.content.length > 100){
+		newMessage.style.width = "700px";
+		newMessage.style.justifyContent = "flex-end";
+	}
+	zoneTexte.innerHTML = txt;
 	
 	newMessage.appendChild(zoneTexte);
 
