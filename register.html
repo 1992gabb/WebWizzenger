@@ -9,11 +9,50 @@
 		<script src="js/Models/Contact.js"></script>
 		<script src="js/Models/Message.js"></script>
 		<script src="js/Models/User.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+		<script type="text/javascript" src="js/firebase.js"></script>
     </head>
 	<body id = "register_body">
 		<script>
+			let popupRegister;
+			let email;
+			let pwd;
+			let currentUser;
+
 			window.onload = () => {
 				
+			}
+
+			function register(){
+
+				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+				.then(function() {
+					// Existing and future Auth states are now persisted in the current
+					// session only. Closing the window would clear any existing state even
+					// if a user forgets to sign out.
+					// ...
+					// New sign-in will be persisted with session persistence.
+					return firebase.auth().signInWithEmailAndPassword(email.value, pwd.value);
+				})
+				.then(function(firebaseUser) {
+					//Succes
+				})
+				.catch(function(error) {
+					// Handle Errors here.
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					console.log(errorMessage);
+					
+				});
+
+				firebase.auth().onAuthStateChanged(function(user) {
+					if (user) {
+						document.location.href="main.html";
+					} else {
+					// No user is signed in.
+					}
+				});
+				console.log(currentUser);
 			}
 		</script>
 		
@@ -21,6 +60,36 @@
 			<h1>S'enregister</h1>
 		</header>
 
-		<!-- Espace de register -->
+		<div id="register_zone">
+			<!-- <form action="index.php" method ="post" > -->
+				<div class="lignes_register">			
+					<h2 id="titre_user">Courriel: </h2>
+					<input type="text" name="email_register" id="email_register" placeholder="" value = "">
+				</div>
+				<div class="vider"></div>
+				<div class="lignes_register">
+					<h2>Nom d'usager: </h2>			
+					<input type="text" name="username_register" id="username_register" placeholder="" value = "">
+				</div>
+				<div class="vider"></div>
+				<div class="lignes_register">
+					<h2>Téléphone (opt.): </h2>			
+					<input type="text" name="phone_register" id="phone_register" placeholder="" value = "">
+				</div>
+				<div class="vider"></div>
+				<div class="lignes_register">
+					<h2>Mot de Passe: </h2>			
+					<input type="password" name="pwd1_register" id="pwd1_register" placeholder="" value = "">
+				</div>
+				<div class="vider"></div>
+				<div class="lignes_register">
+					<h2>Confirmez: </h2>			
+					<input type="password" name="pwd2_register" id="pwd2_register" placeholder="" value = "">
+				</div>
+				<div class="vider"></div>
+			<!-- </form> -->
+			<button onclick="register()" id="btn_confirmRegister">S'enregistrer</button>
+		</div>
+		<button id = "register_logout" onclick="goBack()">Retourner à la page d'accueil</button>
 	</body>
 </html>

@@ -23,12 +23,17 @@ function openTab(evt, tabTitle) {
 	evt.currentTarget.className += " active";
 }
 
-function register(){
+function goRegister(){
     document.location.href="register.html"
 }
 
 function currentUserInfo(){
     return firebase.auth().currentUser;
+}
+
+//Retourne à la page de connexion
+function goBack(){
+	document.location.href = "index.html";
 }
 
 

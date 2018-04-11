@@ -520,106 +520,33 @@ function sendMessage(enterRequest){
 		content = str.substr(0,str.length-1);
 	}
 
-	if(content.trim().length != 0){
-		let tempMessage;
-		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
-		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
-		let refLastMessage = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
-		let key = refMessages.key;
-	
-		let date = new Date();
-		let dateOutput;
-		
-		if((date.getMonth()+1) < 10){
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
-		}else{
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
-		}
+	createDatabaseEntry(content);
 
-		let newMessageToWrite={
-			id: key, 
-			convoId: currentConvo.id,
-			content:content,
-			senderId: currentUserData.email,
-			timeStamp: dateOutput,
-			type: "text",
-		}
-		refMessages.set(newMessageToWrite);
-		refTextHint.set(content);
-		refLastMessage.set(dateOutput);
+	readConvos();
 
-		readConvos();
+	container.value = "";
 
-		container.value = "";
-		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 
-		if(content.length >=45){
-			document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
-		}else{
-			document.getElementById("textHint-"+currentContactName).innerHTML = content;
-		}
+	if(content.length >=45){
+		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
+	}else{
+		document.getElementById("textHint-"+currentContactName).innerHTML = content;
 	}
 }
 
 //Réagit au onclick du bouton wizz et envoie un wizz!
 function sendWizz(){
 	let container = document.getElementById("message_content");
-	let content = "WIZZ";
+	container.value = "";
 
-	if(content.trim().length != 0){
-		let tempMessage;
-		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
-		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
-		let refLastMessage = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
-		let key = refMessages.key;
-	
-		let date = new Date();
-		let dateOutput;
-		
-		if((date.getMonth()+1) < 10){
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
-		}else{
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
-		}
-		
-		let newMessageToWrite={
-			id: key, 
-			convoId: currentConvo.id,
-			content:'WIZZ',
-			senderId: currentUserData.email,
-			timeStamp: dateOutput,
-			type: "wizz",
-			wizzTriggered : "false"
-		}
-		refMessages.set(newMessageToWrite);
-		refTextHint.set(content);
-		refLastMessage.set(dateOutput);
+	createDatabaseEntry("WIZZ");
 
-		container.value = "";
-		readConvos();
+	readConvos();
 
-		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
-		wizzAnimation();
-	}
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+	wizzAnimation();
 }
 
 //Réagit au onclick du bouton son et envoie un son!
@@ -635,6 +562,18 @@ function sendSound(number){
 		content = "blur";
 	}
 
+	createDatabaseEntry(content);
+
+	container.value = "";
+	readConvos();
+
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+	soundAnimation(content);
+	
+}
+
+function createDatabaseEntry(content){
 	if(content.trim().length != 0){
 		let tempMessage;
 		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
@@ -669,17 +608,11 @@ function sendSound(number){
 			type: "sound",
 			wizzTriggered : "false"
 		}
+
 		refMessages.set(newMessageToWrite);
 		refTextHint.set(content);
 		refLastMessage.set(dateOutput);
-
-		container.value = "";
-		readConvos();
-
-		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
-		soundAnimation(content);
-	}
+	}	
 }
 
 //Se déconnecte et retourne à la page de connexion
@@ -692,3 +625,4 @@ function logout(){
 	  });
 	
 }
+
