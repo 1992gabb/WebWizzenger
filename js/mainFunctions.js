@@ -567,8 +567,6 @@ function sendMessage(enterRequest){
 		}else{
 			document.getElementById("textHint-"+currentContactName).innerHTML = content;
 		}
-		
-		
 	}
 }
 
@@ -581,7 +579,7 @@ function sendWizz(){
 		let tempMessage;
 		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
 		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
-		let refTime = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
+		let refLastMessage = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
 		let key = refMessages.key;
 	
 		let date = new Date();
@@ -612,13 +610,12 @@ function sendWizz(){
 			wizzTriggered : "false"
 		}
 		refMessages.set(newMessageToWrite);
-	
 		refTextHint.set(content);
+		refLastMessage.set(dateOutput);
 
 		container.value = "";
+		readConvos();
 
-		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
-		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
 		wizzAnimation();
@@ -642,7 +639,7 @@ function sendSound(number){
 		let tempMessage;
 		let refMessages = firebase.database().ref('conversations/' + currentConvo.id + "/messages").push();
 		let refTextHint = firebase.database().ref('conversations/' + currentConvo.id+"/textHint");
-		let refTime = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
+		let refLastMessage = firebase.database().ref('conversations/' + currentConvo.id+"/lastMessageDate");
 		let key = refMessages.key;
 	
 		let date = new Date();
@@ -673,13 +670,12 @@ function sendSound(number){
 			wizzTriggered : "false"
 		}
 		refMessages.set(newMessageToWrite);
-	
 		refTextHint.set(content);
+		refLastMessage.set(dateOutput);
 
 		container.value = "";
+		readConvos();
 
-		//tempMessage = new Message(key, content, currentConvo.id, currentUserData.email, dateOutput, "text", "false");
-		//ajouterMessage(1, tempMessage);
 		document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
 		document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
 		soundAnimation(content);
