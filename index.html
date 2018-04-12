@@ -55,13 +55,13 @@
 					
 				});
 
-				firebase.auth().onAuthStateChanged(function(user) {
-					if (user) {
-						document.location.href="main.html";
-					} else {
+				//firebase.auth().onAuthStateChanged(function(user) {
+					//if (user) {
+						//document.location.href="main.html";
+					//} else {
 					// No user is signed in.
-					}
-				});
+					//}
+				//});
 				console.log(currentUser);
 			}
 		</script>
@@ -78,12 +78,12 @@
 				<h2>CONNEXION</h2>
 				<div id = "ligne1">			
 					<h2 id="titre_user">Courriel: </h2>
-					<input type="text" name="username" id="user" placeholder="" value = "gabb_bomb@hotmail.com">
+					<input type="text" name="username" id="user" placeholder="" value = "">
 				</div>
 				<div class="vider"></div>
 				<div id = "ligne2">
 					<h2>Mot de Passe: </h2>			
-					<input type="password" name="pwd" id="password" placeholder="" value = "AAAaaa111">
+					<input type="password" name="pwd" id="password" placeholder="" value = "">
 				</div>
 				<div class="vider"></div>
 				<div id="zone_boutons_index">
