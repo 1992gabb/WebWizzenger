@@ -11,6 +11,7 @@ var currentUserData;
 var contactsRef = firebase.database().ref('contacts/');
 var contactsData;
 var myContactsList = [];
+let contactsLoaded = false;
 
 //Pour les éléments de la conversation courante
 var currentContactName;
@@ -71,7 +72,11 @@ function readUsers(){
 
 		createConvoList();
 
-		readContacts();
+		if(!contactsLoaded){
+			contactsLoaded = true;
+			readContacts();
+		}
+		
 	});
 }
 

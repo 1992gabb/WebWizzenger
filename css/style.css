@@ -28,7 +28,7 @@ html{
 
 /* ---------------------- Le contenu de la page index----------------------  */
 #index_body{
-	width:1080px;
+	width:100%;
 	height:980px;
 	margin:auto;
 	padding-top:10px;
@@ -39,16 +39,35 @@ html{
 }
 
 header{
+	width:100%;
 	display:block;
 	margin:auto;
-	color:#E63946;
+	color:#8bb372;
+	background-color: black;
+}
+
+header h3{
+	width:130px;
+	margin:auto;
+	padding-bottom:15px;
+}
+
+h1,h2, h3{
+	font-family: "Raleway-Regular";
 }
 
 /* ---------------------- Login ----------------------  */
 h1{
 	text-align: center;
-	padding:10px 0 30px 0;
+	padding:10px 0 20px 0;
 	
+}
+
+#index_content{
+	width:80%;
+	height:980px;
+	margin:auto;
+	padding-top:50px;
 }
 
 #login_zone{
@@ -56,10 +75,10 @@ h1{
 	text-align: center;
 	width:400px;
 	height:425px;
-	float:left;
+	float:right;
 	border:2px solid black;
 	background-color:white;
-	margin-right: 6%;
+	margin-right: 15%;
 	padding:10px;
 	margin-left:3%;
 }
@@ -75,8 +94,9 @@ h1{
 }
 
 input[type=text], input[type=password] {
+	width:200px;
     height:20px;
-    border:2px solid #E63946; 
+    border:2px solid #8bb372; 
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
@@ -85,7 +105,7 @@ input[type=text], input[type=password] {
 #btn_submit, #btn_register{
 	height:30px;
 	width:150px;
-	margin:60px auto 5px auto;
+	margin:30px auto 5px auto;
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
@@ -94,7 +114,7 @@ input[type=text], input[type=password] {
 }
 
 #btn_register{
-	margin:0;
+	margin:10px 0 0 0;
 }
 
 #zone_boutons_index{
@@ -106,12 +126,12 @@ input[type=text], input[type=password] {
 
 #ligne1, #ligne2{
 	font-size:0.7em;
-	margin:60px 60px 0px 40px;
+	margin:60px 40px 0px 20px;
 	float:left;
 }
 
 #ligne2{
-	margin:20px 20px 0px 40px;
+	margin:20px 20px 0px 20px;
 }
 
 .popup {
@@ -136,13 +156,14 @@ input[type=text], input[type=password] {
 }
 
 /* ---------------------- Message d'accueil ----------------------  */
-main{
+#index_message{
 	width:500px;
 	height:425px;
 	padding:10px;
 	border:2px solid black;
 	text-align: justify;
 	float:left;
+	margin-left:15%;
 	margin-bottom:30px;
 	background-color:white;
 }
@@ -163,10 +184,10 @@ ul{
 #img_wizz{
 	width: 32%;
 	height:32%;
-	margin:auto;
-	display:block;
+	margin:20px -13%;
+	display:inline-block;
 	opacity:0;
-	transition: all 3s ease;
+	transition: all 0.5s ease;
 }
 
 footer{
@@ -224,18 +245,18 @@ footer{
 }
 
 .lignes_register h2{
-	
 	display:inline;
 }
 
 #register_zone input[type=text],#register_zone input[type=password] {
 	width:300px;
     height:20px;
-    border:2px solid #E63946; 
+    border:2px solid #8bb372; 
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
-	margin-left:20px;
+	margin:10px 40px;
+	float:right;
 }
 
 #btn_confirmRegister{
@@ -276,6 +297,8 @@ footer{
 	overflow:hidden;
 }
 
+
+
 #zone_browsing{
 	height:100%;
 	float:left;
@@ -296,7 +319,7 @@ footer{
 	width:100%;
 	height:8%;
 	margin:auto;
-	color:#E63946;
+	color:#8bb372;
 	font-size:24px;
 	line-height:25px;
 	background-color:rgba(255,255,255,0.5);
@@ -304,9 +327,27 @@ footer{
 }
 
 #zone_recherche{
+	position: relative;
 	width:100%;
 	height: 8%;
 	background-color:rgba(255,255,255,0.5);
+}
+
+.topnav {
+    overflow: hidden;
+}
+
+#searchBar{
+	width:80%;
+	height:40px;
+	margin:4% 8%;
+}
+
+#icon_search{
+	position: absolute;
+	width:25px;
+	height:25px;
+	top:25px;
 }
 
 /* Pour gérer l'affichage des tabs, inspiré de: https://www.w3schools.com/howto/howto_js_tabs.asp*/

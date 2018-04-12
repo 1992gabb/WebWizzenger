@@ -14,111 +14,118 @@
 	<script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
 	<script type="text/javascript" src="js/firebase.js"></script>
 
-		<script>
-			let popupRegister;
-			let email;
-			let pwd;
-			let currentUser;
+	<script>
+		let popupRegister;
+		let email;
+		let pwd;
+		let currentUser;
 
-			window.onload = () => {
-				document.body.style.opacity = 1;
-				document.body.style.paddingTop = 0;
-				setTimeout(afficherWizz, 1500);
-				popupRegister = document.getElementById("zone_register");
-				email = document.getElementById("user");
-				pwd = document.getElementById("password");
+		window.onload = () => {
+			document.body.style.opacity = 1;
+			document.body.style.paddingTop = 0;
+			setTimeout(afficherWizz, 1500);
+			popupRegister = document.getElementById("zone_register");
+			email = document.getElementById("user");
+			pwd = document.getElementById("password");
 
-				if(currentUser!=null){
-					document.location.href = "main.html"
+			if(currentUser!=null){
+				document.location.href = "main.html"
+			}
+		}
+
+		function signIn(){
+
+			firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+			.then(function() {
+				// Existing and future Auth states are now persisted in the current
+				// session only. Closing the window would clear any existing state even
+				// if a user forgets to sign out.
+				// ...
+				// New sign-in will be persisted with session persistence.
+				return firebase.auth().signInWithEmailAndPassword(email.value, pwd.value);
+			})
+			.then(function(firebaseUser) {
+				//Succes
+			})
+			.catch(function(error) {
+				// Handle Errors here.
+				var errorCode = error.code;
+				var errorMessage = error.message;
+				console.log(errorMessage);
+				
+			});
+
+			firebase.auth().onAuthStateChanged(function(user) {
+				if (user) {
+					document.location.href="main.html";
+				} else {
+				// No user is signed in.
 				}
-			}
+			});
+			console.log(currentUser);
+		}
+	</script>
+	
 
-			function signIn(){
-
-				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-				.then(function() {
-					// Existing and future Auth states are now persisted in the current
-					// session only. Closing the window would clear any existing state even
-					// if a user forgets to sign out.
-					// ...
-					// New sign-in will be persisted with session persistence.
-					return firebase.auth().signInWithEmailAndPassword(email.value, pwd.value);
-				})
-				.then(function(firebaseUser) {
-					//Succes
-				})
-				.catch(function(error) {
-					// Handle Errors here.
-					var errorCode = error.code;
-					var errorMessage = error.message;
-					console.log(errorMessage);
-					
-				});
-
-				//firebase.auth().onAuthStateChanged(function(user) {
-					//if (user) {
-						//document.location.href="main.html";
-					//} else {
-					// No user is signed in.
-					//}
-				//});
-				console.log(currentUser);
-			}
-		</script>
-		
 	<body id = "index_body">
 		<header>
-			<h1>WIZZENGER</h1>
+				<h1>WIZZENGER</h1>
+				<h3>Page d'accueil</h3>
 		</header>
-
 		<!-- Espace de login -->
 		
-		<div id="login_zone">
-			<!-- <form action="index.php" method ="post" > -->
-				<h2>CONNEXION</h2>
-				<div id = "ligne1">			
-					<h2 id="titre_user">Courriel: </h2>
-					<input type="text" name="username" id="user" placeholder="" value = "">
+		<div id="index_content">
+			<!-- Message d'accueil -->
+			<div id="index_message">
+					<p>Tanné de devoir utiliser facebook pour discuter avec vos meilleurs amis?</p>
+					<p>Nostalgique du temps où l'on avait hâte de rentrer à la maison pour envoyer des wizz à ses copains?</p>
+					<p>Vous êtes au bon endroit! Avec Wizzenger, combinez plaisir et simplicité afin de communiquer avec ceux qui vous sont cher.
+					Entrez votre courriel et le tour est joué!</p>
+					<p>Wizzenger est un service gratuit et le sera TOUJOURS</p>
+					<h3>Quoi de neuf dans la version 0.5:</h3>
+					<ul>
+						<li>	Conversations avec un contact</li>
+						<li>	Modifier ses contacts</li>
+						<li>	Envoyer un wizz!</li>
+					</ul>
+					<h3>À venir</h3>
+					<ul>
+						<li>	Conversations de groupe!</li>
+						<li>Envoyer des gif!</li>
+					</ul>
+					<h3>À venir dans très longtemps:</h3>
+					<ul>
+						<li>Une version pour iPhone.....</li>
+					</ul>
 				</div>
-				<div class="vider"></div>
-				<div id = "ligne2">
-					<h2>Mot de Passe: </h2>			
-					<input type="password" name="pwd" id="password" placeholder="" value = "">
-				</div>
-				<div class="vider"></div>
-				<div id="zone_boutons_index">
-					<button onclick="signIn()" id="btn_submit">Connexion</button>
-				</div>
-			<!-- </form> -->
-			<button onclick="goRegister()" id="btn_register">S'enregistrer</button>
-		</div>
 
-		<!-- Message d'accueil -->
-		<main>
-			<p>Tanné de devoir utiliser facebook pour discuter avec vos meilleurs amis?</p>
-			<p>Nostalgique du temps où l'on avait hâte de rentrer à la maison pour envoyer des wizz à ses copains?</p>
-			<p>Vous êtes au bon endroit! Avec Wizzenger, combinez plaisir et simplicité afin de communiquer avec ceux qui vous sont cher.
-			   Entrez votre courriel et le tour est joué!</p>
-			<p>Wizzenger est un service gratuit et le sera TOUJOURS</p>
-			<h3>Quoi de neuf dans la version 0.5:</h3>
-			<ul>
-				<li>	Conversations avec un contact</li>
-				<li>	Modifier ses contacts</li>
-			</ul>
-			<h3>À venir</h3>
-			<ul>
-				<li>Envoyer un wizz!</li>
-				<li>Envoyer des gif!</li>
-			</ul>
-			<h3>À venir dans très longtemps:</h3>
-			<ul>
-				<li>Une version pour iPhone.....</li>
-			</ul>
-		</main>
-		<img id="img_wizz" src="images/back.jpg"></img>
-		<div id="mess_mobile">
-			<p>Pour utiliser l'application sur mobile, veuillez nous visiter sur le <a href="#">Play Store</a>!</p> 
+			<div id="login_zone">
+				<!-- <form action="index.php" method ="post" > -->
+					<h2>CONNEXION</h2>
+					<div id = "ligne1">			
+						<h2 id="titre_user">Courriel: </h2>
+						<input type="text" name="username" id="user" placeholder="" value = "">
+					</div>
+					<div class="vider"></div>
+					<div id = "ligne2">
+						<h2>Mot de Passe: </h2>			
+						<input type="password" name="pwd" id="password" placeholder="" value = "">
+					</div>
+					<div class="vider"></div>
+					<div id="zone_boutons_index">
+						<button onclick="signIn()" id="btn_submit">Connexion</button>
+					</div>
+				<!-- </form> -->
+				<p style = "font-size:12px;margin-top:175px;">Pas de compte? Cliquez sur le bouton ci-dessous pour vous enregistrer!</p>
+				<button onclick="goRegister()" id="btn_register">S'enregistrer</button>
+			</div>
+
 			
+			<img id="img_wizz" src="images/back.jpg"></img>
+			<div id="mess_mobile">
+				<p>Pour utiliser l'application sur mobile, veuillez nous visiter sur le <a href="#">Play Store</a>!</p> 
+				
+			</div>
 		</div>
 		<footer>Tous Droits Réservés.                Créé par Gabriel Bombardier                  10 Février 2018</footer>
 	</body>
