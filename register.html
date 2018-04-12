@@ -20,39 +20,66 @@
 			let currentUser;
 
 			window.onload = () => {
-				
+				email = document.getElementById("email_register");
+			
+				if(document.getElementById("pwd1_register").value == document.getElementById("pwd2_register").value){
+					pwd = document.getElementById("pwd1_register");
+				}else{
+					pwd = -1;
+				}
 			}
 
 			function register(){
+				email = document.getElementById("email_register");
+				let phone = document.getElementById("phone_register").value;
+				let username = document.getElementById("username_register").value;
 
-				firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-				.then(function() {
-					// Existing and future Auth states are now persisted in the current
-					// session only. Closing the window would clear any existing state even
-					// if a user forgets to sign out.
-					// ...
-					// New sign-in will be persisted with session persistence.
-					return firebase.auth().signInWithEmailAndPassword(email.value, pwd.value);
-				})
-				.then(function(firebaseUser) {
-					//Succes
-				})
-				.catch(function(error) {
-					// Handle Errors here.
-					var errorCode = error.code;
-					var errorMessage = error.message;
-					console.log(errorMessage);
-					
-				});
+				if(document.getElementById("pwd1_register").value == document.getElementById("pwd2_register").value){
+					pwd = document.getElementById("pwd1_register");
+				}else{
+					pwd = -1;
+				}
 
-				firebase.auth().onAuthStateChanged(function(user) {
-					if (user) {
-						document.location.href="main.html";
-					} else {
-					// No user is signed in.
-					}
-				});
-				console.log(currentUser);
+				if(pwd!=-1 && username!=""){
+					firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+					.then(function() {
+						// Existing and future Auth states are now persisted in the current
+						// session only. Closing the window would clear any existing state even
+						// if a user forgets to sign out.
+						// ...
+						// New sign-in will be persisted with session persistence.
+						return firebase.auth().createUserWithEmailAndPassword(email.value, pwd.value);
+					})
+					.then(function(firebaseUser) {
+						let usersRef = firebase.database().ref('users/').push();
+						let key = usersRef.key;
+						
+						let newUserToWrite={
+							id: key, 
+							avatar: 0,
+							email:email.value,
+							phone:phone,
+							token:0,
+							username:username
+						}
+						usersRef.set(newUserToWrite);
+
+						firebase.auth().onAuthStateChanged(function(user) {
+							if (user) {
+								document.location.href="main.html";
+							} else {
+							// No user is signed in.
+							}
+						});
+					})
+					.catch(function(error) {
+						// Handle Errors here.
+						var errorCode = error.code;
+						var errorMessage = error.message;
+						console.log(errorMessage);
+						
+					});
+				}
 			}
 		</script>
 		
