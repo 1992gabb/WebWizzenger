@@ -8,6 +8,10 @@ html{
 	height:100%;
 }
 
+body{
+	height:100%;
+}
+
 /* ---------------------- Les Fonts ----------------------   */
 @font-face{
 	font-family: "Dosis-Regular";
@@ -29,7 +33,6 @@ html{
 /* ---------------------- Le contenu de la page index----------------------  */
 #index_body{
 	width:100%;
-	height:980px;
 	margin:auto;
 	padding-top:10px;
 	background-color:#F1FAEE;
@@ -40,6 +43,7 @@ html{
 
 header{
 	width:100%;
+	height:100px;
 	display:block;
 	margin:auto;
 	color:#8bb372;
@@ -64,8 +68,8 @@ h1{
 }
 
 #index_content{
-	width:80%;
-	height:980px;
+	width:100%;
+	height:665px;
 	margin:auto;
 	padding-top:50px;
 }
@@ -73,12 +77,12 @@ h1{
 #login_zone{
 	color:black;
 	text-align: center;
-	width:400px;
+	width:30%;
 	height:425px;
 	float:right;
 	border:2px solid black;
 	background-color:white;
-	margin-right: 15%;
+	margin-right: 5%;
 	padding:10px;
 	margin-left:3%;
 }
@@ -105,7 +109,7 @@ input[type=text], input[type=password] {
 #btn_submit, #btn_register{
 	height:30px;
 	width:150px;
-	margin:30px auto 5px auto;
+	margin:30px 0 5px 18%;
     -webkit-border-radius: 5px;
 	border-radius: 5px;
 	font-family:"Raleway-Regular";
@@ -126,12 +130,12 @@ input[type=text], input[type=password] {
 
 #ligne1, #ligne2{
 	font-size:0.7em;
-	margin:60px 40px 0px 20px;
+	margin:60px 0 0 20%;
 	float:left;
 }
 
 #ligne2{
-	margin:20px 20px 0px 20px;
+	margin:20px 0 0 20%;
 }
 
 .popup {
@@ -157,15 +161,33 @@ input[type=text], input[type=password] {
 
 /* ---------------------- Message d'accueil ----------------------  */
 #index_message{
-	width:500px;
+	width:50%;
 	height:425px;
 	padding:10px;
 	border:2px solid black;
 	text-align: justify;
 	float:left;
-	margin-left:15%;
+	margin-left:5%;
 	margin-bottom:30px;
 	background-color:white;
+	position: relative;
+}
+
+#img_wizz{
+	width: 150px;
+	height:150px;
+	margin:20px 50px;
+	display:block;
+	position:absolute;
+	top:50%;
+	left:70%;
+}
+
+/* Pour faire l'effet wizz */
+#img_wizz:hover {
+    animation: shake 0.5s; 
+    /* Le nombre de fois que l'on recommence*/
+    animation-iteration-count: infinite; 
 }
 
 p{
@@ -181,29 +203,22 @@ ul{
 }
 
 /* ----------------------  Le footer ----------------------  */
-#img_wizz{
-	width: 32%;
-	height:32%;
-	margin:20px -13%;
-	display:inline-block;
-	opacity:0;
-	transition: all 0.5s ease;
-}
+
 
 footer{
 	width:100%;
+	height:100px;
 	text-align:center;
 	margin-top:35px;
 	color:black;
+	background-color: black;
+	color:#8bb372;
+	line-height: 100px;
+	font-family: "Raleway-Regular";
 }
 
 
-/* Pour faire l'effet wizz */
-#img_wizz:hover {
-    animation: shake 0.5s; 
-    /* Le nombre de fois que l'on recommence*/
-    animation-iteration-count: infinite; 
-}
+
 
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
@@ -231,7 +246,7 @@ footer{
 	color:black;
 	text-align: center;
 	width:600px;
-	height:425px;
+	height:465px;
 	float:left;
 	border:2px solid black;
 	background-color:white;
@@ -247,6 +262,7 @@ footer{
 .lignes_register h2{
 	display:inline;
 }
+
 
 #register_zone input[type=text],#register_zone input[type=password] {
 	width:300px;
@@ -639,13 +655,6 @@ footer{
 	height:50px;
 	width:50px;
 }
-
-
-
-
-footer{
-	display:none;
-}
 /* -------------------- Fin de la page main ------------------------ */
 
 
@@ -677,19 +686,11 @@ footer{
 		margin:30px auto;
 	}
 
-	#img_wizz{
-		width: 450px;
-		height:450px;
-		margin:150px auto;
-		display:block;
-		opacity:0;
-		transition: all 3s ease;
-	}
-
 	footer{
 		position:absolute;
 		bottom:0%;
 		font-size:2em;
+		font-family: "Raleway-Regular";
 	}
 }
 
