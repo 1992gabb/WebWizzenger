@@ -102,6 +102,16 @@ function createConvoList(){
 			addMessageToConvoList();
 		}
 }
+
+//Crée la liste de contacts
+function createContactList(){
+	document.getElementById("zone_contacts").innerHTML = "";
+
+	addMessageToContactList();
+	for(let i=0;i<myContactsList.length;i++){
+		addContactToList(myContactsList[i].user2.username);
+	}
+}
 //Après avoir enregistré le nom des users, ajoute les contacts en lien avec le currentUser
 function readContacts(){
 	contactsRef.once('value', function(snapshot) {
@@ -128,11 +138,7 @@ function readContacts(){
 			}
 		}
 
-		addMessageToContactList();
-		for(let i=0;i<myContactsList.length;i++){
-			addContactToList(myContactsList[i].user2.username);
-		}
-
+		createContactList();
 	});
 }
 
@@ -198,6 +204,7 @@ function getAvatar(contactName, currentDiv){
 	// Get the download URL
 	let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
 	currentAvatarRef.getDownloadURL().then(function(url) {
+		currentAvatarUrl = url;
 		currentDiv.setAttribute("src", url);
   	}).catch(function(error) {
 	switch (error.code) {
@@ -213,6 +220,9 @@ function getAvatar(contactName, currentDiv){
 	  case 'storage/unknown':
 		// Unknown error occurred, inspect the server response
 		break;
+	  case 403:
+		console.log("error");
+	  	break;
 	}
   });
 }
@@ -387,6 +397,11 @@ function updateConvoMessages(convo){
 					ajouterMessage(1, currentMessage);
 				}else{
 					ajouterMessage(0, currentMessage);
+					if(currentMessage.wizzTriggered == "false"){
+						let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + currentMessage.id + "/wizzTriggered");
+						refCurrentMessage.set("true");
+						soundAnimation("new");
+					}
 				}
 			}
 		}
@@ -421,24 +436,23 @@ function ajouterMessage(position, message){
 		}
 	}
 
+	//construit le message  image - contenu
+	let container = document.getElementById("selectedConvo_messages");
+
 	let newMessage = document.createElement("div");
 	newMessage.setAttribute("class", "one_message");
 
 	let zoneTexte = document.createElement("p");
-	let txt = message.content;
+	zoneTexte.innerHTML = message.content;
+	newMessage.appendChild(zoneTexte);
+	container.appendChild(newMessage);
 
-	
 	if(message.content.length > 100){
 		newMessage.style.width = "700px";
 		newMessage.style.justifyContent = "flex-end";
 	}
-	zoneTexte.innerHTML = txt;
-	
-	newMessage.appendChild(zoneTexte);
 
-	let container = document.getElementById("selectedConvo_messages");
-	container.appendChild(newMessage);
-
+	//Saute une ligne après un mesage
 	let clear = document.createElement("div");
 	clear.setAttribute("class", "vider");
 	container.appendChild(clear);
@@ -631,3 +645,35 @@ function logout(){
 	
 }
 
+//Adapte la zone de conversation en fonction de ce qui est dans la zone recherche
+function searchListener(event){
+	let searchText = document.getElementById("searchBar").value;
+	
+	if(document.getElementById("zone_convos").style.display == "block"){
+		document.getElementById("zone_convos").innerHTML = "";
+		if(searchText == ""){
+			createConvoList();
+		}else{
+			for(let i=0;i<myConvosList.length;i++){
+				if(myConvosList[i].user2.username.toLowerCase().startsWith(searchText)){
+					console.log(myConvosList[i].user2.username);
+					addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
+				}
+			}
+		}
+	}else{
+		document.getElementById("zone_contacts").innerHTML = "";
+		if(searchText == ""){
+			createContactList();
+		}else{
+			for(let i=0;i<myContactsList.length;i++){
+				if(myContactsList[i].user2.username.toLowerCase().startsWith(searchText)){
+					console.log(myContactsList[i].user2.username);
+					addContactToList(myContactsList[i].user2.username);
+				}
+			}
+		}
+	}
+	
+	
+}

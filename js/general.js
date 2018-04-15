@@ -2,6 +2,7 @@ function afficherWizz(){
 	document.getElementById("img_wizz").style.opacity = 1;
 }
 
+//Merci à : https://www.w3schools.com/howto/howto_js_tabs.asp
 function openTab(evt, tabTitle) {
     // Declare all variables
     let tabcontent, tablinks;
