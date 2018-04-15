@@ -381,6 +381,7 @@ function updateConvoMessages(convo){
 	let container = document.getElementById("selectedConvo_messages");
 	container.innerHTML = "";
 	let currentMessage;
+	let readLineDone = false;
 	
 	for(id in convo.messages){
 		currentMessage = convo.messages[id];
@@ -394,7 +395,16 @@ function updateConvoMessages(convo){
 		}else{
 			if(currentMessage.id != lastMessageCreated.id){
 				if(currentMessage.senderId == currentUserData.email){
+					if(currentMessage.wizzTriggered == "false"){
+						if(!readLineDone){
+							//Permet de dire où est ce que le contact est rendu
+							readLineDone = true;
+							addReadLine();
+						}
+						
+					}
 					ajouterMessage(1, currentMessage);
+					
 				}else{
 					ajouterMessage(0, currentMessage);
 					if(currentMessage.wizzTriggered == "false"){
@@ -419,6 +429,31 @@ function updateConvoMessages(convo){
 
 	container.scrollTop = container.scrollHeight;
 	done = true;
+}
+
+//Pour tracer la ligne de progression du contact
+function addReadLine(){
+	let container = document.getElementById("selectedConvo_messages");
+
+
+
+	let line = document.createElement("div");
+	line.setAttribute("class", "contact_line");
+	container.appendChild(line);
+
+	let zoneTexte = document.createElement("p");
+	zoneTexte.innerHTML = "Le contact a lu jusqu'ici";
+	zoneTexte.setAttribute("style", "width:10%;font-size:12px;float:left; text-align:center;");
+	container.appendChild(zoneTexte);
+
+	let line2 = document.createElement("div");
+	line2.setAttribute("class", "contact_line");
+	container.appendChild(line2);
+
+	//Saute une ligne après un mesage
+	let clear = document.createElement("div");
+	clear.setAttribute("class", "vider");
+	container.appendChild(clear);
 }
 
 //Pour créer un message par DOM

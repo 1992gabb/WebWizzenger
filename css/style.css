@@ -564,6 +564,15 @@ footer{
 .one_message p{
 	margin:0;
 }
+
+.contact_line{
+	width:45%;
+	height:2px;
+	background-color: #8bb372;
+	margin:5px 0;
+	float:left;
+}
+
 .vider{
 	width:100%;
 	clear:both;
