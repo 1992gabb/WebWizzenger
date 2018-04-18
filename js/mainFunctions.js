@@ -333,10 +333,10 @@ function addContact(email){
 		}	
 
 		if(create && !already){
-			myContactsList.push(new Contact(contactId, currentUserData,contact));
 			let refContacts = firebase.database().ref('contacts/').push();
 			let key = refContacts.key;
-			
+			myContactsList.push(new Contact(key, currentUserData,contact));
+
 			let newContactToWrite={
 				id: key, 
 				contactID: email,
