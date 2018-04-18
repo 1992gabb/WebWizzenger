@@ -125,7 +125,7 @@ function readContacts(){
 				for(data2 in usersData){
 					if(usersData[data2].email == contactsData[data].contactID){
 						contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
-						myContactsList.push(new Contact(data2, currentUserData,contact));
+						myContactsList.push(new Contact(data, currentUserData,contact));
 					}
 				}
 				
@@ -134,7 +134,7 @@ function readContacts(){
 				for(data3 in usersData){
 					if(usersData[data3].email == contactsData[data].userID){
 						contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
-						myContactsList.push(new Contact(data3, currentUserData,contact));
+						myContactsList.push(new Contact(data, currentUserData,contact));
 					}
 				}
 			}
@@ -320,7 +320,7 @@ function addContact(email){
 			if(usersData[data].email == email){
 				create = true;
 				contactId = data;
-				contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+				contact = new User(data, usersData[data].email,usersData[data].avatar,usersData[data].phone,usersData[data].username,usersData[data].token);
 				//Si ils sont déja contact
 				for(let i = 0; i<myContactsList.length; i++){
 					if(myContactsList[i].user1.email == usersData[data].email && myContactsList[i].user2.email == currentUserData.email){
@@ -359,6 +359,63 @@ function addContact(email){
 //Retir le contact du compte de l'utilisateur
 function removeContact(email){
 	console.log(email);
+	let remove = false;
+	let found = false;
+	let contactId;
+	let convoId = -1;
+	let userId;
+
+	usersRef.once('value', function(snapshot) {
+		usersData = snapshot.val();
+
+		for(data in usersData){
+			//Si l'usager existe
+			if(usersData[data].email == email){
+				found = true;
+				userId = data;
+				//Si ils sont contact
+				for(let i = 0; i<myContactsList.length; i++){
+					if(myContactsList[i].user1.email == usersData[data].email && myContactsList[i].user2.email == currentUserData.email){
+						remove = true;
+						contactId = i;
+					}else if(myContactsList[i].user2.email == usersData[data].email && myContactsList[i].user1.email == currentUserData.email){
+						remove = true;
+						contactId = i;
+					}
+				}	
+			}
+		}	
+
+		if(found && remove){
+			let refContacts = firebase.database().ref('contacts/' + myContactsList[contactId].id);
+			refContacts.remove();
+			myContactsList.splice(contactId, 1);
+
+			for(let i = 0; i<myConvosList.length;i++){
+				console.log(myConvosList[i].user2.email);
+				if(myConvosList[i].user1.email == usersData[userId].email && myConvosList[i].user2.email == currentUserData.email){
+					remove = true;
+					convoId = i;
+				}else if(myConvosList[i].user2.email == usersData[userId].email && myConvosList[i].user1.email == currentUserData.email){
+					remove = true;
+					convoId = i;
+				}
+			}
+
+			if(convoId != -1){
+				myConvosList.splice(convoId, 1);
+			}
+
+
+			createContactList();
+			createConvoList();
+			alert("Le contact a bien été supprimé.");
+		}else if(!found){
+			alert("Ce email n'est lié a aucun usager. Veuillez rééssayer.")
+		}else if(!remove){
+			alert("Ce n'est même pas votre contact!")
+		}
+	});
 }
 
 
@@ -542,7 +599,10 @@ function updateConvoMessages(convo){
 					if(currentMessage.wizzTriggered == "false"){
 						let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + currentMessage.id + "/wizzTriggered");
 						refCurrentMessage.set("true");
-						soundAnimation("new");
+						if(currentMessage.content != "woush" && currentMessage.content != "blur" && currentMessage.content != "WIZZ"){
+							soundAnimation("new");
+						}
+						
 					}
 				}
 			}
