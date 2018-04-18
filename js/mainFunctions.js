@@ -70,8 +70,10 @@ function readUsers(){
 			}
 		}
 
+		//Créé la première instance de la liste de conversations
 		createConvoList();
 
+		//Lis les contacts et les affiche (une seule fois)
 		if(!contactsLoaded){
 			contactsLoaded = true;
 			readContacts();
@@ -95,7 +97,7 @@ function createConvoList(){
 		document.getElementById("zone_convos").innerHTML = "";
 
 		for(let i=0;i<myConvosList.length;i++){
-			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
+			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint, myConvosList[i].lastMessageDate);
 		}
 
 		if(myConvosList.length<15){
@@ -107,7 +109,7 @@ function createConvoList(){
 function createContactList(){
 	document.getElementById("zone_contacts").innerHTML = "";
 
-	addMessageToContactList();
+	addMessageToContactList(); //Pour ajouter la zone d'ajout et suppression d'un contact
 	for(let i=0;i<myContactsList.length;i++){
 		addContactToList(myContactsList[i].user2.username);
 	}
@@ -143,42 +145,67 @@ function readContacts(){
 }
 
 //Créé les div pour chacune des conversations
-function addConvoToList(contactName, textHint){
+function addConvoToList(contactName, textHint, lastMessageDate){
+	//Création des variables contenant des valeurs importantes
 	let newConvo = document.createElement("div");
+	let zoneTexte = document.createElement("div");
+	let convoContact = document.createElement("p");
+	let text;
+	let convoTextHint = document.createElement("p");
+	let id;
+	let convoTime = document.createElement("p");
+	let nowDate = new Date();
+	let container = document.getElementById("zone_convos");
+
+	//Création du div contenant tous les éléments
 	newConvo.setAttribute("class", "conversationInList");
 	
+	//Création de l'avatar
 	convoAvatar = document.createElement("img");
 	convoAvatar.setAttribute("class", 'convoAvatar');
 	convoAvatar.setAttribute("src", 'images/default_avatar.png');
 	getAvatar(contactName, convoAvatar);
 
-	let zoneTexte = document.createElement("div");
+	//Création de la zone contenant le nom et le textHint
 	zoneTexte.setAttribute("class", "conversationsInList_texte");
 
-	let convoContact = document.createElement("p");
-	let text = document.createTextNode(contactName);
+	//Création du nom
+	text = document.createTextNode(contactName);
 	convoContact.appendChild(text);
 	zoneTexte.appendChild(convoContact);
 	
-	let convoTextHint = document.createElement("p");
-	let id = "textHint-" + contactName;
+	//Création du textHint
+	id = "textHint-" + contactName;
 	convoTextHint.setAttribute("id", id)
 	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;");
 
 	if(textHint.length >=45){
 		let newTextHint = textHint.substr(0,42) + "...";
-		text2 = document.createTextNode(newTextHint);
+		text = document.createTextNode(newTextHint);
 	}else{
-		text2 = document.createTextNode(textHint);
+		text = document.createTextNode(textHint);
 	}
-	
-	convoTextHint.appendChild(text2);
+	convoTextHint.appendChild(text);
 	zoneTexte.appendChild(convoTextHint);
 
+	//Création du timeStamp
+	id = "convoTime-" + contactName;
+	convoTime.setAttribute("id", id)
+	convoTime.setAttribute("style", "font-size: 12px;color:#a8a8a8;float:right; height:100%; line-height:30px;");
+	
+	if(nowDate.getDate() == Number(lastMessageDate.substr(8,2))){
+		text = document.createTextNode(lastMessageDate.substr(11,8));
+	}else{
+		text = document.createTextNode(lastMessageDate.substr(5,5));
+	}
+	convoTime.appendChild(text);
+
+	//Ajout des 3 parties au grand div
 	newConvo.appendChild(convoAvatar);
 	newConvo.appendChild(zoneTexte);
+	newConvo.appendChild(convoTime);
 
-	let container = document.getElementById("zone_convos");
+	//Ajout des infos de laconversation dans la liste
 	container.appendChild(newConvo);
 
 	//Pour gérer le fait d'ouvrir une conversation
@@ -187,7 +214,7 @@ function addConvoToList(contactName, textHint){
 		currentContactName = currentDOM.childNodes[1].childNodes[0].innerHTML;
 		lastMessageCreated = null;
 		document.getElementById("message_content").value = "";
-		afficherConvo(currentContactName);
+		showConvo(currentContactName);
 	}
 }
 
@@ -249,7 +276,7 @@ function addMessageToConvoList(){
 //Pour ajouter un petit message dans la liste de convos
 function addMessageToContactList(){
 	let newConvo = document.createElement("div");
-	newConvo.setAttribute("class", "contactInList");
+	newConvo.setAttribute("class", "addRemoveContact");
 
 	let addButton = document.createElement("img");
 	addButton.setAttribute("id", 'contact_addButton');
@@ -264,6 +291,16 @@ function addMessageToContactList(){
 
 	let container = document.getElementById("zone_contacts");
 	container.appendChild(newConvo);
+
+	//Pour gérer le fait d'ouvrir une conversation
+	addButton.onclick = function (e) {
+		window.prompt("Entrez le courriel du contact que vous voulez ajouter","");
+	}
+
+	//Pour gérer le fait d'ouvrir une conversation
+	removeButton.onclick = function (e) {
+		window.prompt("Entrez le courriel du contact que vous voulez supprimer","");
+	}
 }
 
 //Pour créer des div pour chacun des contacts
@@ -300,23 +337,23 @@ function addContactToList(contactName){
 	container.appendChild(newContact);
 
 	contactAvatar.onclick = function(event){
-		afficherContact(contactName);
+		showContact(contactName);
 	}
 	contactNameP.onclick = function(event){
-		afficherContact(contactName);
+		showContact(contactName);
 	}
 	imageMess.onclick = function(event){
-		afficherConvo(contactName);
+		showConvo(contactName);
 	}
 
 	imageWizz.onclick = function(event){
-		afficherConvo(contactName);
+		showConvo(contactName);
 		sendWizz();
 	}
 }
 
 //Affiche la conversation dans l'espace de droite
-function afficherConvo(contactName){
+function showConvo(contactName){
 	let pTitle = document.getElementById("p_title");
 	pTitle.innerHTML = contactName;
 
@@ -327,7 +364,7 @@ function afficherConvo(contactName){
 }
 
 //Affiche le contact dans l'espace de droite
-function afficherContact(contactName){
+function showContact(contactName){
 	let pTitle = document.getElementById("p_title");
 	pTitle.innerHTML = contactName;
 
@@ -388,9 +425,9 @@ function updateConvoMessages(convo){
 
 		if(lastMessageCreated == null){
 			if(currentMessage.senderId == currentUserData.email){
-				ajouterMessage(1, currentMessage);
+				addMessage(1, currentMessage);
 			}else{
-				ajouterMessage(0, currentMessage);
+				addMessage(0, currentMessage);
 			}
 		}else{
 			if(currentMessage.id != lastMessageCreated.id){
@@ -403,10 +440,10 @@ function updateConvoMessages(convo){
 						}
 						
 					}
-					ajouterMessage(1, currentMessage);
+					addMessage(1, currentMessage);
 					
 				}else{
-					ajouterMessage(0, currentMessage);
+					addMessage(0, currentMessage);
 					if(currentMessage.wizzTriggered == "false"){
 						let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + currentMessage.id + "/wizzTriggered");
 						refCurrentMessage.set("true");
@@ -435,8 +472,6 @@ function updateConvoMessages(convo){
 function addReadLine(){
 	let container = document.getElementById("selectedConvo_messages");
 
-
-
 	let line = document.createElement("div");
 	line.setAttribute("class", "contact_line");
 	container.appendChild(line);
@@ -457,17 +492,17 @@ function addReadLine(){
 }
 
 //Pour créer un message par DOM
-function ajouterMessage(position, message){
+function addMessage(position, message){
 	//Détermine si on ajoute la date
 	nowTime = new Date(message.timeStamp.substr(0, 10));
 	
 	if(lastMessageCreated == undefined){
-		ajouterTimeStamp(nowTime);
+		addTimeStamp(nowTime);
 	}else{
 		lastTime = new Date(lastMessageCreated.timeStamp.substr(0, 10));
 	
 		if(nowTime > lastTime){
-			ajouterTimeStamp(nowTime);
+			addTimeStamp(nowTime);
 		}
 	}
 
@@ -545,7 +580,7 @@ function soundAnimation(name){
 	}, 2000);
 }
 
-function ajouterTimeStamp(date){
+function addTimeStamp(date){
 	let timeZone = document.createElement("div");
 	timeZone.setAttribute("class", "timestamp");
 
