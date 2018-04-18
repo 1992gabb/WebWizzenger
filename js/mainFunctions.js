@@ -294,14 +294,73 @@ function addMessageToContactList(){
 
 	//Pour gérer le fait d'ouvrir une conversation
 	addButton.onclick = function (e) {
-		window.prompt("Entrez le courriel du contact que vous voulez ajouter","");
+		let contactToAdd = window.prompt("Entrez le courriel du contact que vous voulez ajouter","");
+		addContact(contactToAdd);
 	}
 
 	//Pour gérer le fait d'ouvrir une conversation
 	removeButton.onclick = function (e) {
-		window.prompt("Entrez le courriel du contact que vous voulez supprimer","");
+		let contactToRemove = window.prompt("Entrez le courriel du contact que vous voulez supprimer","");
+		removeContact(contactToRemove);
 	}
 }
+
+//Créé un nouveau contact dans le compte de l'utilisateur
+function addContact(email){
+	let create = false;
+	let already = false;
+	let contactId;
+	let contact;
+
+	usersRef.once('value', function(snapshot) {
+		usersData = snapshot.val();
+
+		for(data in usersData){
+			//Si l'usager existe
+			if(usersData[data].email == email){
+				create = true;
+				contactId = data;
+				contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+				//Si ils sont déja contact
+				for(let i = 0; i<myContactsList.length; i++){
+					if(myContactsList[i].user1.email == usersData[data].email && myContactsList[i].user2.email == currentUserData.email){
+						already = true;
+					}else if(myContactsList[i].user2.email == usersData[data].email && myContactsList[i].user1.email == currentUserData.email){
+						already = true;
+					}
+				}	
+			}
+		}	
+
+		if(create && !already){
+			myContactsList.push(new Contact(contactId, currentUserData,contact));
+			let refContacts = firebase.database().ref('contacts/').push();
+			let key = refContacts.key;
+			
+			let newContactToWrite={
+				id: key, 
+				contactID: email,
+				userID:currentUserData.email,
+			}
+		
+			refContacts.set(newContactToWrite);
+
+			createContactList();
+		}else if(!create){
+			alert("Ce email n'est lié a aucun contact. Veuillez rééssayer.")
+		}else if(already){
+			alert("Le contact existe déja!")
+		}
+	});
+	
+	
+}
+
+//Retir le contact du compte de l'utilisateur
+function removeContact(email){
+	console.log(email);
+}
+
 
 //Pour créer des div pour chacun des contacts
 function addContactToList(contactName){
@@ -389,14 +448,18 @@ function showContact(contactName){
 //**Modifier pour qu'il n'aille pas tout loader a chaque fois */
 //Pour aller loader la convo sélectionnée
 function loadConvo(contactName){
+	let contactId;
+	let user;
+	let found = false;
+	let created = false;
 	convosRef.on('value', function(snapshot) {
 		convosData = snapshot.val();
-		let contactId;
-		
+
 		//Pour trouver le user correspondant au contact
 		for(data2 in usersData){
 			if(usersData[data2].username == contactName){
 				contactId = data2;
+				user = usersData[data2];
 			}
 		}
 
@@ -404,12 +467,43 @@ function loadConvo(contactName){
 			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
 				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
 				updateConvoMessages(currentConvo);
+				found = true;
 			}else if(convosData[data].idUser2 == currentUser.email && convosData[data].idUser1 == usersData[contactId].email){
 				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
 				updateConvoMessages(currentConvo);
+				found = true;
 			}
 		}
+
+		if(!found && !created){
+			created = true;
+			createNewConvo(user, contactId);
+		}
 	});
+
+	
+}
+
+function createNewConvo(otherUserData, contactId){
+	let refConvos = firebase.database().ref('conversations/').push();
+	let key = refConvos.key;
+	
+	let newConvoToWrite={
+		id: key, 
+		idUser1: currentUserData.email,
+		idUser2: otherUserData.email,
+		lastMessageDate: "",
+		messages: "",
+		textHint: "Nouvelle convo!"
+	}
+
+	currentContactName = otherUserData.username;
+	currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
+	myConvosList.push(currentConvo);
+
+	refConvos.set(newConvoToWrite);
+	createConvoList();
+	createDatabaseEntry("Nouvelle convo!");
 }
 
 //**Modifier pour qu'il n'aille pas tout loader a chaque fois */
@@ -419,6 +513,7 @@ function updateConvoMessages(convo){
 	container.innerHTML = "";
 	let currentMessage;
 	let readLineDone = false;
+	let content;
 	
 	for(id in convo.messages){
 		currentMessage = convo.messages[id];
@@ -456,10 +551,15 @@ function updateConvoMessages(convo){
 	}
 
 	//Pour updater le textHint
-	let content = lastMessageCreated.content;
-
-	if(content.length >=45){
-		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
+	if(lastMessageCreated==null){
+		content = "Nouvelle Convo!";
+	}else{
+		content = lastMessageCreated.content;
+	}
+	
+	console.log(currentContactName);
+	if(content.length >=30){
+		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,30) + "...";
 	}else{
 		document.getElementById("textHint-"+currentContactName).innerHTML = content;
 	}
@@ -672,22 +772,45 @@ function createDatabaseEntry(content){
 	
 		let date = new Date();
 		let dateOutput;
+
+		let mois;
+		let jour;
+		let heures;
+		let minutes;
+		let seconds;
 		
 		if((date.getMonth()+1) < 10){
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				dateOutput = date.getFullYear() + "-0" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
+			mois = "-0" + (date.getMonth()+1);
 		}else{
-			if(date.getDate()<10){
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-0" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}else{
-				
-				dateOutput = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":00";
-			}
+			mois = "-" + (date.getMonth()+1);
 		}
 		
+		if(date.getDate()<10){
+			jour = "-0" + (date.getDate());
+		}else{
+			jour = "-" + (date.getDate());
+		}
+		
+		if(date.getMinutes()<10){
+			minutes = ":0" + date.getMinutes();
+		}else{
+			minutes = ":" + date.getMinutes();
+		}
+	
+		if(date.getSeconds()<10){
+			seconds = ":0" + date.getSeconds();
+		}else{
+			seconds = ":" + date.getSeconds();
+		}
+
+		if(date.getHours()<10){
+			heures = "0" + date.getHours();
+		}else{
+			heures = " " + date.getHours();
+		}
+
+		dateOutput = date.getFullYear() + mois + jour + heures + minutes + seconds;
+
 		let newMessageToWrite={
 			id: key, 
 			convoId: currentConvo.id,
