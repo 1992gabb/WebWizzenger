@@ -864,7 +864,7 @@ function createDatabaseEntry(content){
 		}
 
 		if(date.getHours()<10){
-			heures = "0" + date.getHours();
+			heures = " 0" + date.getHours();
 		}else{
 			heures = " " + date.getHours();
 		}
