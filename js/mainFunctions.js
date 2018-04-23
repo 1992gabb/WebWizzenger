@@ -1,15 +1,20 @@
 var convosRef = firebase.database().ref('conversations/');
+let currentConvoRef;
+
 var convosData;
 var convosList = [];
 var myConvosList = [];
 let currentConvo;
+let currentConvoId;
 
 var usersRef = firebase.database().ref('users/');
 var usersData;
+let user;
 var currentUserData;
 
 var contactsRef = firebase.database().ref('contacts/');
 var contactsData;
+let contactId;
 var myContactsList = [];
 let contactsLoaded = false;
 
@@ -27,122 +32,7 @@ let storage = firebase.storage();
 let storageRef = storage.ref('avatars/');
 
 
-//Obtient les informations des conversations et appelle ensuite readUsers pour trouver les noms des contacts.
-function readConvos(){
-	convosRef.once('value', function(snapshot) {
-		convosData = snapshot.val();
-		readUsers();
-	});
-}
 
-//Obtient les informations sur les users et ajoute ensuite les conversations en lien avec le currentUser
-function readUsers(){
-	usersRef.once('value', function(snapshot) {
-		usersData = snapshot.val();
-
-		//Pour avoir les infos de l'utilisateur connecté
-		for(data in usersData){
-			if(usersData[data].email == currentUser.email){
-				currentUserData = new User(data, usersData[data].email,usersData[data].avatar,usersData[data].phone,usersData[data].username,usersData[data].token);
-			}
-		}
-
-		//Pour créer la liste des conversations
-		myConvosList = [];
-		for(data in convosData){
-			if(convosData[data].idUser1 == currentUser.email){
-				//Pour trouver le user correspondant au contact
-				for(data2 in usersData){
-					if(usersData[data2].email == convosData[data].idUser2){
-						contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
-						myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
-					}
-				}
-				
-			}else if(convosData[data].idUser2 == currentUser.email){
-				//Pour trouver le user correspondant au contact
-				for(data3 in usersData){
-					if(usersData[data3].email == convosData[data].idUser1){
-						contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
-						myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
-					}
-				}
-			}
-		}
-
-		//Créé la première instance de la liste de conversations
-		createConvoList();
-
-		//Lis les contacts et les affiche (une seule fois)
-		if(!contactsLoaded){
-			contactsLoaded = true;
-			readContacts();
-		}
-		
-	});
-}
-
-//Pour mettre les conversations en ordre du plus récent. Merci : https://en.proft.me/2015/11/14/sorting-array-objects-number-string-date-javascrip/
-function sortConvoList(){
-	myConvosList.sort(function(a,b){
-		var c = new Date(a.lastMessageDate).getTime();
-		var d = new Date(b.lastMessageDate).getTime();
-		return d-c;
-	});
-}
-
-//Crée la liste de conversations
-function createConvoList(){
-		sortConvoList();
-		document.getElementById("zone_convos").innerHTML = "";
-
-		for(let i=0;i<myConvosList.length;i++){
-			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint, myConvosList[i].lastMessageDate);
-		}
-
-		if(myConvosList.length<15){
-			addMessageToConvoList();
-		}
-}
-
-//Crée la liste de contacts
-function createContactList(){
-	document.getElementById("zone_contacts").innerHTML = "";
-
-	addMessageToContactList(); //Pour ajouter la zone d'ajout et suppression d'un contact
-	for(let i=0;i<myContactsList.length;i++){
-		addContactToList(myContactsList[i].user2.username);
-	}
-}
-//Après avoir enregistré le nom des users, ajoute les contacts en lien avec le currentUser
-function readContacts(){
-	contactsRef.once('value', function(snapshot) {
-		contactsData = snapshot.val();
-
-		for(data in contactsData){
-			if(contactsData[data].userID == currentUser.email){
-				//Pour trouver le user correspondant au contact
-				for(data2 in usersData){
-					if(usersData[data2].email == contactsData[data].contactID){
-						contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
-						myContactsList.push(new Contact(data, currentUserData,contact));
-					}
-				}
-				
-			}else if(contactsData[data].contactID == currentUser.email){
-				//Pour trouver le user correspondant au contact
-				for(data3 in usersData){
-					if(usersData[data3].email == contactsData[data].userID){
-						contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
-						myContactsList.push(new Contact(data, currentUserData,contact));
-					}
-				}
-			}
-		}
-
-		createContactList();
-	});
-}
 
 //Créé les div pour chacune des conversations
 function addConvoToList(contactName, textHint, lastMessageDate){
@@ -218,93 +108,6 @@ function addConvoToList(contactName, textHint, lastMessageDate){
 	}
 }
 
-//Va chercher la photo associé a un client
-function getAvatar(contactName, currentDiv){
-
-	let currentContact;
-	for(data in usersData){
-		if(usersData[data].username == contactName){
-			currentContact = usersData[data];
-		}
-	}
-
-	// Get the download URL
-	let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
-	currentAvatarRef.getDownloadURL().then(function(url) {
-		currentAvatarUrl = url;
-		currentDiv.setAttribute("src", url);
-  	}).catch(function(error) {
-	switch (error.code) {
-	  case 'storage/object_not_found':
-		// File doesn't exist
-		break;
-	  case 'storage/unauthorized':
-		// User doesn't have permission to access the object
-		break;
-	  case 'storage/canceled':
-		// User canceled the upload
-		break;
-	  case 'storage/unknown':
-		// Unknown error occurred, inspect the server response
-		break;
-	  case 403:
-		console.log("error");
-	  	break;
-	}
-  });
-}
-
-//Pour ajouter un petit message dans la liste de convos
-function addMessageToConvoList(){
-	let newConvo = document.createElement("div");
-	newConvo.setAttribute("class", "conversationInList");
-
-	let zoneTexte = document.createElement("div");
-	zoneTexte.setAttribute("class", "conversationsInList_texte2");
-
-	let convoContact = document.createElement("p");
-	convoContact.setAttribute("style", "text-align:center; width:100%");
-	let text = document.createTextNode("Continuez à parler et vos conversations s'afficheront ici!");
-	convoContact.appendChild(text);
-	zoneTexte.appendChild(convoContact);
-	newConvo.appendChild(zoneTexte);
-
-	let container = document.getElementById("zone_convos");
-	container.appendChild(newConvo);
-}
-
-//Pour ajouter un petit message dans la liste de convos
-function addMessageToContactList(){
-	let newConvo = document.createElement("div");
-	newConvo.setAttribute("class", "addRemoveContact");
-
-	let addButton = document.createElement("img");
-	addButton.setAttribute("id", 'contact_addButton');
-	addButton.setAttribute("src", 'images/button_add.png');
-
-	let removeButton = document.createElement("img");
-	removeButton.setAttribute("id", 'contact_removeButton');
-	removeButton.setAttribute("src", 'images/button_remove.png');
-	
-	newConvo.appendChild(addButton);
-	newConvo.appendChild(removeButton);
-
-	let container = document.getElementById("zone_contacts");
-	container.appendChild(newConvo);
-
-	//Pour gérer le fait d'ouvrir une conversation
-	addButton.onclick = function (e) {
-		let contactToAdd = window.prompt("Entrez le courriel du contact que vous voulez ajouter","");
-		addContact(contactToAdd);
-	}
-
-	//Pour gérer le fait d'ouvrir une conversation
-	removeButton.onclick = function (e) {
-		let contactToRemove = window.prompt("Entrez le courriel du contact que vous voulez supprimer","");
-		removeContact(contactToRemove);
-	}
-}
-
 //Créé un nouveau contact dans le compte de l'utilisateur
 function addContact(email){
 	let create = false;
@@ -356,69 +159,6 @@ function addContact(email){
 	
 }
 
-//Retir le contact du compte de l'utilisateur
-function removeContact(email){
-	console.log(email);
-	let remove = false;
-	let found = false;
-	let contactId;
-	let convoId = -1;
-	let userId;
-
-	usersRef.once('value', function(snapshot) {
-		usersData = snapshot.val();
-
-		for(data in usersData){
-			//Si l'usager existe
-			if(usersData[data].email == email){
-				found = true;
-				userId = data;
-				//Si ils sont contact
-				for(let i = 0; i<myContactsList.length; i++){
-					if(myContactsList[i].user1.email == usersData[data].email && myContactsList[i].user2.email == currentUserData.email){
-						remove = true;
-						contactId = i;
-					}else if(myContactsList[i].user2.email == usersData[data].email && myContactsList[i].user1.email == currentUserData.email){
-						remove = true;
-						contactId = i;
-					}
-				}	
-			}
-		}	
-
-		if(found && remove){
-			let refContacts = firebase.database().ref('contacts/' + myContactsList[contactId].id);
-			refContacts.remove();
-			myContactsList.splice(contactId, 1);
-
-			for(let i = 0; i<myConvosList.length;i++){
-				console.log(myConvosList[i].user2.email);
-				if(myConvosList[i].user1.email == usersData[userId].email && myConvosList[i].user2.email == currentUserData.email){
-					remove = true;
-					convoId = i;
-				}else if(myConvosList[i].user2.email == usersData[userId].email && myConvosList[i].user1.email == currentUserData.email){
-					remove = true;
-					convoId = i;
-				}
-			}
-
-			if(convoId != -1){
-				myConvosList.splice(convoId, 1);
-			}
-
-
-			createContactList();
-			createConvoList();
-			alert("Le contact a bien été supprimé.");
-		}else if(!found){
-			alert("Ce email n'est lié a aucun usager. Veuillez rééssayer.")
-		}else if(!remove){
-			alert("Ce n'est même pas votre contact!")
-		}
-	});
-}
-
-
 //Pour créer des div pour chacun des contacts
 function addContactToList(contactName){
 	let newContact = document.createElement("div");
@@ -466,189 +206,6 @@ function addContactToList(contactName){
 		showConvo(contactName);
 		sendWizz();
 	}
-}
-
-//Affiche la conversation dans l'espace de droite
-function showConvo(contactName){
-	let pTitle = document.getElementById("p_title");
-	pTitle.innerHTML = contactName;
-
-	document.getElementById("selectedContactInfo").style.display = "none";
-	document.getElementById("selectedConvo_messages").style.display = "block";
-	document.getElementById("selectedConvo_writeSend").style.display = "block";
-	loadConvo(contactName);
-}
-
-//Affiche le contact dans l'espace de droite
-function showContact(contactName){
-	let pTitle = document.getElementById("p_title");
-	pTitle.innerHTML = contactName;
-
-	document.getElementById("selectedConvo_writeSend").style.display = "none";
-	document.getElementById("selectedConvo_messages").style.display = "none";
-	document.getElementById("selectedContactInfo").style.display = "block";
-
-	let currentContact;
-	for(data in usersData){
-		if(usersData[data].username == contactName){
-			currentContact = usersData[data];
-		}
-	}
-
-	// document.getElementById("selectedContact_avatar")
-	getAvatar(contactName, document.getElementById("selectedContact_avatar"));
-	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
-	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
-
-}
-
-//**Modifier pour qu'il n'aille pas tout loader a chaque fois */
-//Pour aller loader la convo sélectionnée
-function loadConvo(contactName){
-	let contactId;
-	let user;
-	let found = false;
-	let created = false;
-	convosRef.on('value', function(snapshot) {
-		convosData = snapshot.val();
-
-		//Pour trouver le user correspondant au contact
-		for(data2 in usersData){
-			if(usersData[data2].username == contactName){
-				contactId = data2;
-				user = usersData[data2];
-			}
-		}
-
-		for(data in convosData){
-			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
-				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
-				updateConvoMessages(currentConvo);
-				found = true;
-			}else if(convosData[data].idUser2 == currentUser.email && convosData[data].idUser1 == usersData[contactId].email){
-				currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
-				updateConvoMessages(currentConvo);
-				found = true;
-			}
-		}
-
-		if(!found && !created){
-			created = true;
-			createNewConvo(user, contactId);
-		}
-	});
-
-	
-}
-
-function createNewConvo(otherUserData, contactId){
-	let refConvos = firebase.database().ref('conversations/').push();
-	let key = refConvos.key;
-	
-	let newConvoToWrite={
-		id: key, 
-		idUser1: currentUserData.email,
-		idUser2: otherUserData.email,
-		lastMessageDate: "",
-		messages: "",
-		textHint: "Nouvelle convo!"
-	}
-
-	currentContactName = otherUserData.username;
-	currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
-	myConvosList.push(currentConvo);
-
-	refConvos.set(newConvoToWrite);
-	createConvoList();
-	createDatabaseEntry("Nouvelle convo!");
-}
-
-//**Modifier pour qu'il n'aille pas tout loader a chaque fois */
-//Va chercher les messages dans la conversations et les affiche
-function updateConvoMessages(convo){
-	let container = document.getElementById("selectedConvo_messages");
-	container.innerHTML = "";
-	let currentMessage;
-	let readLineDone = false;
-	let content;
-	
-	for(id in convo.messages){
-		currentMessage = convo.messages[id];
-
-		if(lastMessageCreated == null){
-			if(currentMessage.senderId == currentUserData.email){
-				addMessage(1, currentMessage);
-			}else{
-				addMessage(0, currentMessage);
-			}
-		}else{
-			if(currentMessage.id != lastMessageCreated.id){
-				if(currentMessage.senderId == currentUserData.email){
-					if(currentMessage.wizzTriggered == "false"){
-						if(!readLineDone){
-							//Permet de dire où est ce que le contact est rendu
-							readLineDone = true;
-							addReadLine();
-						}
-						
-					}
-					addMessage(1, currentMessage);
-					
-				}else{
-					addMessage(0, currentMessage);
-					if(currentMessage.wizzTriggered == "false"){
-						let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + currentMessage.id + "/wizzTriggered");
-						refCurrentMessage.set("true");
-						if(currentMessage.content != "woush" && currentMessage.content != "blur" && currentMessage.content != "WIZZ"){
-							soundAnimation("new");
-						}
-						
-					}
-				}
-			}
-		}
-		lastMessageCreated = currentMessage;
-	}
-
-	//Pour updater le textHint
-	if(lastMessageCreated==null){
-		content = "Nouvelle Convo!";
-	}else{
-		content = lastMessageCreated.content;
-	}
-	
-	console.log(currentContactName);
-	if(content.length >=30){
-		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,30) + "...";
-	}else{
-		document.getElementById("textHint-"+currentContactName).innerHTML = content;
-	}
-
-	container.scrollTop = container.scrollHeight;
-	done = true;
-}
-
-//Pour tracer la ligne de progression du contact
-function addReadLine(){
-	let container = document.getElementById("selectedConvo_messages");
-
-	let line = document.createElement("div");
-	line.setAttribute("class", "contact_line");
-	container.appendChild(line);
-
-	let zoneTexte = document.createElement("p");
-	zoneTexte.innerHTML = "Le contact a lu jusqu'ici";
-	zoneTexte.setAttribute("style", "width:10%;font-size:12px;float:left; text-align:center;");
-	container.appendChild(zoneTexte);
-
-	let line2 = document.createElement("div");
-	line2.setAttribute("class", "contact_line");
-	container.appendChild(line2);
-
-	//Saute une ligne après un mesage
-	let clear = document.createElement("div");
-	clear.setAttribute("class", "vider");
-	container.appendChild(clear);
 }
 
 //Pour créer un message par DOM
@@ -715,29 +272,78 @@ function addMessage(position, message){
 	
 }
 
-function wizzAnimation(){
-	let wizzSound = new Audio("sounds/wizzSound.mp3");
-	wizzSound.play();
-	let container = document.getElementById("main_body");
-	container.style.animation = "shake 0.5s";
-	console.log(container.style.animation);
-	container.style.animationIterationCount = "infinite";
-	setTimeout(function() {
-		container.style.animation = '';
-		wizzSound.pause();
-		wizzSound.currentTime = 0;
-	}, 2000);
-	
+//Pour ajouter un petit message dans la liste de convos
+function addMessageToConvoList(){
+	let newConvo = document.createElement("div");
+	newConvo.setAttribute("class", "conversationInList");
+
+	let zoneTexte = document.createElement("div");
+	zoneTexte.setAttribute("class", "conversationsInList_texte2");
+
+	let convoContact = document.createElement("p");
+	convoContact.setAttribute("style", "text-align:center; width:100%");
+	let text = document.createTextNode("Continuez à parler et vos conversations s'afficheront ici!");
+	convoContact.appendChild(text);
+	zoneTexte.appendChild(convoContact);
+	newConvo.appendChild(zoneTexte);
+
+	let container = document.getElementById("zone_convos");
+	container.appendChild(newConvo);
 }
 
-function soundAnimation(name){
-	let path = "sounds/" + name + "Sound.mp3";
-	let sound = new Audio(path);
-	sound.play();
-	setTimeout(function() {
-		sound.pause();
-		sound.currentTime = 0;
-	}, 2000);
+//Pour ajouter un petit message dans la liste de convos
+function addMessageToContactList(){
+	let newConvo = document.createElement("div");
+	newConvo.setAttribute("class", "addRemoveContact");
+
+	let addButton = document.createElement("img");
+	addButton.setAttribute("id", 'contact_addButton');
+	addButton.setAttribute("src", 'images/button_add.png');
+
+	let removeButton = document.createElement("img");
+	removeButton.setAttribute("id", 'contact_removeButton');
+	removeButton.setAttribute("src", 'images/button_remove.png');
+	
+	newConvo.appendChild(addButton);
+	newConvo.appendChild(removeButton);
+
+	let container = document.getElementById("zone_contacts");
+	container.appendChild(newConvo);
+
+	//Pour gérer le fait d'ouvrir une conversation
+	addButton.onclick = function (e) {
+		let contactToAdd = window.prompt("Entrez le courriel du contact que vous voulez ajouter","");
+		addContact(contactToAdd);
+	}
+
+	//Pour gérer le fait d'ouvrir une conversation
+	removeButton.onclick = function (e) {
+		let contactToRemove = window.prompt("Entrez le courriel du contact que vous voulez supprimer","");
+		removeContact(contactToRemove);
+	}
+}
+
+//Pour tracer la ligne de progression du contact
+function addReadLine(){
+	let container = document.getElementById("selectedConvo_messages");
+
+	let line = document.createElement("div");
+	line.setAttribute("class", "contact_line");
+	container.appendChild(line);
+
+	let zoneTexte = document.createElement("p");
+	zoneTexte.innerHTML = "Le contact a lu jusqu'ici";
+	zoneTexte.setAttribute("style", "width:10%;font-size:12px;float:left; text-align:center;");
+	container.appendChild(zoneTexte);
+
+	let line2 = document.createElement("div");
+	line2.setAttribute("class", "contact_line");
+	container.appendChild(line2);
+
+	//Saute une ligne après un mesage
+	let clear = document.createElement("div");
+	clear.setAttribute("class", "vider");
+	container.appendChild(clear);
 }
 
 function addTimeStamp(date){
@@ -757,69 +363,28 @@ function addTimeStamp(date){
 	container.appendChild(clear);
 }
 
-//Réagit au onclick du bouton et envoie le contenu du text area
-function sendMessage(enterRequest){
-	let container = document.getElementById("message_content");
-	let content;
-	let str = container.value;
+//Crée la liste de conversations
+function createConvoList(){
+		sortConvoList();
+		document.getElementById("zone_convos").innerHTML = "";
 
-	if(enterRequest == 0){
-		content = str;
-	}else{
-		content = str.substr(0,str.length-1);
-	}
+		for(let i=0;i<myConvosList.length;i++){
+			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint, myConvosList[i].lastMessageDate);
+		}
 
-	createDatabaseEntry(content);
-
-	readConvos();
-
-	container.value = "";
-
-	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-
-	if(content.length >=45){
-		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
-	}else{
-		document.getElementById("textHint-"+currentContactName).innerHTML = content;
-	}
+		if(myConvosList.length<15){
+			addMessageToConvoList();
+		}
 }
 
-//Réagit au onclick du bouton wizz et envoie un wizz!
-function sendWizz(){
-	let container = document.getElementById("message_content");
-	container.value = "";
+//Crée la liste de contacts
+function createContactList(){
+	document.getElementById("zone_contacts").innerHTML = "";
 
-	createDatabaseEntry("WIZZ");
-
-	readConvos();
-
-	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
-	wizzAnimation();
-}
-
-//Réagit au onclick du bouton son et envoie un son!
-function sendSound(number){
-	let container = document.getElementById("message_content");
-	let content;
-
-	if(number == 0){
-		content = "prout";
-	}else if(number == 1){
-		content = "woush";
-	}else if (number == 2){
-		content = "blur";
+	addMessageToContactList(); //Pour ajouter la zone d'ajout et suppression d'un contact
+	for(let i=0;i<myContactsList.length;i++){
+		addContactToList(myContactsList[i].user2.username);
 	}
-
-	createDatabaseEntry(content);
-
-	container.value = "";
-	readConvos();
-
-	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
-	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
-	soundAnimation(content);
-	
 }
 
 function createDatabaseEntry(content){
@@ -871,6 +436,10 @@ function createDatabaseEntry(content){
 
 		dateOutput = date.getFullYear() + mois + jour + heures + minutes + seconds;
 
+		
+		document.getElementById("convoTime-"+currentContactName).innerHTML =  dateOutput.substr(11,8);
+		
+
 		let newMessageToWrite={
 			id: key, 
 			convoId: currentConvo.id,
@@ -884,7 +453,181 @@ function createDatabaseEntry(content){
 		refMessages.set(newMessageToWrite);
 		refTextHint.set(content);
 		refLastMessage.set(dateOutput);
+
+		//Pour mettre la convo en haut
+		let convoNode = document.getElementById("convoTime-"+currentContactName).parentElement;
+		let convoNodeCopy = convoNode;
+		console.log(convoNodeCopy);
+		let container = document.getElementById("zone_convos");
+		container.removeChild(convoNode);
+		container.insertBefore(convoNodeCopy, container.childNodes[0]);
 	}	
+}
+
+function createNewConvo(otherUserData, contactId){
+	let refConvos = firebase.database().ref('conversations/').push();
+	let key = refConvos.key;
+	
+	let newConvoToWrite={
+		id: key, 
+		idUser1: currentUserData.email,
+		idUser2: otherUserData.email,
+		lastMessageDate: "",
+		messages: "",
+		textHint: "Nouvelle convo!"
+	}
+
+	currentContactName = otherUserData.username;
+	currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
+	myConvosList.push(currentConvo);
+
+	refConvos.set(newConvoToWrite);
+	createConvoList();
+	createDatabaseEntry("Nouvelle convo!");
+}
+
+//Va chercher la photo associé a un client
+function getAvatar(contactName, currentDiv){
+
+	let currentContact;
+	for(data in usersData){
+		if(usersData[data].username == contactName){
+			currentContact = usersData[data];
+		}
+	}
+
+	// Get the download URL
+	let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
+	currentAvatarRef.getDownloadURL().then(function(url) {
+		currentAvatarUrl = url;
+		currentDiv.setAttribute("src", url);
+  	}).catch(function(error) {
+		switch (error.code) {
+		case 'storage/object-not-found':
+			// console.log(error.code);
+			break;
+		case 'storage/unauthorized':
+			// User doesn't have permission to access the object
+			break;
+		case 'storage/canceled':
+			// User canceled the upload
+			break;
+		case 'storage/unknown':
+			// Unknown error occurred, inspect the server response
+			break;
+		}
+  });
+}
+
+//Pour aller loader la convo sélectionnée
+function loadConvo(contactName){
+	let found = false;
+	let created = false;
+	
+
+	if(currentConvoRef!=null){
+		// currentConvoRef.off();
+	}
+	
+	convosRef.once('value', function(snapshot) {
+		convosData = snapshot.val();
+
+		findContactWithName(contactName);
+
+		for(data in convosData){
+			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
+				currentConvoId = data;
+				currentConvoRef = firebase.database().ref('conversations/' + convosData[data].id);
+				found = true;
+			}else if(convosData[data].idUser2 == currentUser.email && convosData[data].idUser1 == usersData[contactId].email){
+				currentConvoId = data;
+				currentConvoRef = firebase.database().ref('conversations/' + convosData[data].id);
+				found = true;
+			}
+		}
+
+		if(!found && !created){
+			created = true;
+			createNewConvo(user, contactId);
+		}
+
+	}).then(function(){
+		currentConvoRef.on('value', function(snapshot) {
+			let currentConvoData = snapshot.val();
+
+			//La convo est ouverte présentement
+			if(currentConvoId == currentConvoData.id){
+				for(let i = 0; i< myConvosList.length; i++){
+					if(myConvosList[i].id == currentConvoData.id){
+						currentConvo =  new Conversation(currentConvoId, currentUserData, usersData[contactId], currentConvoData.textHint,currentConvoData.messages,currentConvoData.lastMessageDate);
+						myConvosList[i] = currentConvo;
+						updateConvoMessages(currentConvo);
+					}
+				}
+			}else{
+				//La convo n'est pas ouverte
+				updateListOnly(currentConvoData);
+			}
+		});
+	});
+}
+
+function updateListOnly(convo){
+	console.log(myConvosList);
+
+	let notCurrentContact = findContactWithEmail(convo);
+
+	for(let i = 0; i< myConvosList.length; i++){
+		console.log(myConvosList[i].id, convo.id);
+		if(myConvosList[i].id == convo.id){
+			myConvosList[i] = new Conversation(convo.id, currentUserData, usersData[notCurrentContact], convo.textHint,convo.messages,convo.lastMessageDate);
+			
+			let contactName = myConvosList[i].user2.username;
+			let textHintNode = document.getElementById("textHint-"+contactName);
+			
+			if(myConvosList[i].textHint.length >=45){
+				let newTextHint = myConvosList[i].textHint.substr(0,42) + "...";
+				textHintNode.innerHTML = newTextHint;
+			}else{
+				textHintNode.innerHTML = myConvosList[i].textHint;
+			}
+
+			let nowDate = new Date();
+			if(nowDate.getDate() == Number(myConvosList[i].lastMessageDate.substr(8,2))){
+				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(11,8);
+			}else{
+				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(5,5);
+			}
+		}
+	}
+	
+}
+
+//Pour trouver le user correspondant au contact
+function findContactWithName(contactName){
+	for(data2 in usersData){
+		if(usersData[data2].username == contactName){
+			contactId = data2;
+			user = usersData[data2];
+		}
+	}
+}
+
+//Pour trouver le user correspondant au contact email
+function findContactWithEmail(convo){
+	for(data2 in usersData){
+		if(convo.idUser1 == currentUserData.email){
+			if(usersData[data2].email == convo.idUser2){
+				contactId = data2;
+			}
+		}else{
+			if(usersData[data2].email == convo.idUser1){
+				contactId = data2;
+			}
+		}
+	}
+
+	return contactId;
 }
 
 //Se déconnecte et retourne à la page de connexion
@@ -898,6 +641,158 @@ function logout(){
 	
 }
 
+//Après avoir enregistré le nom des users, ajoute les contacts en lien avec le currentUser
+function readContacts(){
+	contactsRef.once('value', function(snapshot) {
+		contactsData = snapshot.val();
+
+		for(data in contactsData){
+			if(contactsData[data].userID == currentUser.email){
+				//Pour trouver le user correspondant au contact
+				for(data2 in usersData){
+					if(usersData[data2].email == contactsData[data].contactID){
+						contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+						myContactsList.push(new Contact(data, currentUserData,contact));
+					}
+				}
+				
+			}else if(contactsData[data].contactID == currentUser.email){
+				//Pour trouver le user correspondant au contact
+				for(data3 in usersData){
+					if(usersData[data3].email == contactsData[data].userID){
+						contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
+						myContactsList.push(new Contact(data, currentUserData,contact));
+					}
+				}
+			}
+		}
+
+		createContactList();
+	});
+}
+
+//Obtient les informations des conversations et appelle ensuite readUsers pour trouver les noms des contacts.
+function readConvos(){
+	convosRef.once('value', function(snapshot) {
+		convosData = snapshot.val();
+		readUsers();
+	});
+}
+
+//Obtient les informations sur les users et ajoute ensuite les conversations en lien avec le currentUser
+function readUsers(){
+	usersRef.once('value', function(snapshot) {
+		usersData = snapshot.val();
+
+		//Pour avoir les infos de l'utilisateur connecté
+		for(data in usersData){
+			if(usersData[data].email == currentUser.email){
+				currentUserData = new User(data, usersData[data].email,usersData[data].avatar,usersData[data].phone,usersData[data].username,usersData[data].token);
+			}
+		}
+
+		//Pour créer la liste des conversations
+		myConvosList = [];
+		for(data in convosData){
+			if(convosData[data].idUser1 == currentUser.email){
+				//Pour trouver le user correspondant au contact
+				for(data2 in usersData){
+					if(usersData[data2].email == convosData[data].idUser2){
+						contact = new User(data2, usersData[data2].email,usersData[data2].avatar,usersData[data2].phone,usersData[data2].username,usersData[data2].token);
+						myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+					}
+				}
+				
+			}else if(convosData[data].idUser2 == currentUser.email){
+				//Pour trouver le user correspondant au contact
+				for(data3 in usersData){
+					if(usersData[data3].email == convosData[data].idUser1){
+						contact = new User(data3, usersData[data3].email,usersData[data3].avatar,usersData[data3].phone,usersData[data3].username,usersData[data3].token);
+						myConvosList.push(new Conversation(data, currentUserData, contact, convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate));
+					}
+				}
+			}
+		}
+
+		//Créé la première instance de la liste de conversations
+		createConvoList();
+
+		//Lis les contacts et les affiche (une seule fois)
+		if(!contactsLoaded){
+			contactsLoaded = true;
+			readContacts();
+		}
+		
+		//Attache un listener aux conversations
+		// for(let i = 0; i<myConvosList.length;i++){
+		// 	currentContactName = myConvosList[i].user2.username;
+		// 	loadConvo(currentContactName);
+		// }
+		// document.getElementById("p_title").innerHTML="Sélectionnez une conversation pour commencer!";
+		// document.getElementById("selectedConvo_messages").innerHTML="";
+	});
+}
+
+//Retire le contact du compte de l'utilisateur
+function removeContact(email){
+	let remove = false;
+	let found = false;
+	let contactId;
+	let convoId = -1;
+	let userId;
+
+	usersRef.once('value', function(snapshot) {
+		usersData = snapshot.val();
+
+		for(data in usersData){
+			//Si l'usager existe
+			if(usersData[data].email == email){
+				found = true;
+				userId = data;
+				//Si ils sont contact
+				for(let i = 0; i<myContactsList.length; i++){
+					if(myContactsList[i].user1.email == usersData[data].email && myContactsList[i].user2.email == currentUserData.email){
+						remove = true;
+						contactId = i;
+					}else if(myContactsList[i].user2.email == usersData[data].email && myContactsList[i].user1.email == currentUserData.email){
+						remove = true;
+						contactId = i;
+					}
+				}	
+			}
+		}	
+
+		if(found && remove){
+			let refContacts = firebase.database().ref('contacts/' + myContactsList[contactId].id);
+			refContacts.remove();
+			myContactsList.splice(contactId, 1);
+
+			for(let i = 0; i<myConvosList.length;i++){
+				if(myConvosList[i].user1.email == usersData[userId].email && myConvosList[i].user2.email == currentUserData.email){
+					remove = true;
+					convoId = i;
+				}else if(myConvosList[i].user2.email == usersData[userId].email && myConvosList[i].user1.email == currentUserData.email){
+					remove = true;
+					convoId = i;
+				}
+			}
+
+			if(convoId != -1){
+				myConvosList.splice(convoId, 1);
+			}
+
+
+			createContactList();
+			createConvoList();
+			alert("Le contact a bien été supprimé.");
+		}else if(!found){
+			alert("Ce email n'est lié a aucun usager. Veuillez rééssayer.")
+		}else if(!remove){
+			alert("Ce n'est même pas votre contact!")
+		}
+	});
+}
+
 //Adapte la zone de conversation en fonction de ce qui est dans la zone recherche
 function searchListener(event){
 	let searchText = document.getElementById("searchBar").value;
@@ -909,7 +804,6 @@ function searchListener(event){
 		}else{
 			for(let i=0;i<myConvosList.length;i++){
 				if(myConvosList[i].user2.username.toLowerCase().startsWith(searchText)){
-					console.log(myConvosList[i].user2.username);
 					addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
 				}
 			}
@@ -921,12 +815,208 @@ function searchListener(event){
 		}else{
 			for(let i=0;i<myContactsList.length;i++){
 				if(myContactsList[i].user2.username.toLowerCase().startsWith(searchText)){
-					console.log(myContactsList[i].user2.username);
 					addContactToList(myContactsList[i].user2.username);
 				}
 			}
 		}
 	}
 	
+	
+}
+
+//Réagit au onclick du bouton et envoie le contenu du text area
+function sendMessage(enterRequest){
+	let container = document.getElementById("message_content");
+	let content;
+	let str = container.value;
+
+	if(enterRequest == 0){
+		content = str;
+	}else{
+		content = str.substr(0,str.length-1);
+	}
+
+	createDatabaseEntry(content);
+
+	// readConvos();
+
+	container.value = "";
+
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+
+	if(content.length >=45){
+		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,42) + "...";
+	}else{
+		document.getElementById("textHint-"+currentContactName).innerHTML = content;
+	}
+
+	
+}
+
+//Réagit au onclick du bouton son et envoie un son!
+function sendSound(number){
+	let container = document.getElementById("message_content");
+	let content;
+
+	if(number == 0){
+		content = "prout";
+	}else if(number == 1){
+		content = "woush";
+	}else if (number == 2){
+		content = "blur";
+	}
+
+	createDatabaseEntry(content);
+
+	container.value = "";
+	readConvos();
+
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+	soundAnimation(content);
+	
+}
+
+//Réagit au onclick du bouton wizz et envoie un wizz!
+function sendWizz(){
+	let container = document.getElementById("message_content");
+	container.value = "";
+
+	createDatabaseEntry("WIZZ");
+
+	readConvos();
+
+	document.getElementById("selectedConvo_messages").scrollTop = document.getElementById("selectedConvo_messages").scrollHeight;
+	document.getElementById("textHint-"+currentContactName).innerHTML = "**Un bon vieux Wizz**";
+	wizzAnimation();
+}
+
+//Pour mettre les conversations en ordre du plus récent. Merci : https://en.proft.me/2015/11/14/sorting-array-objects-number-string-date-javascrip/
+function sortConvoList(){
+	myConvosList.sort(function(a,b){
+		var c = new Date(a.lastMessageDate).getTime();
+		var d = new Date(b.lastMessageDate).getTime();
+		return d-c;
+	});
+}
+
+//Affiche la conversation dans l'espace de droite
+function showConvo(contactName){
+	let pTitle = document.getElementById("p_title");
+	pTitle.innerHTML = contactName;
+
+	document.getElementById("selectedContactInfo").style.display = "none";
+	document.getElementById("selectedConvo_messages").style.display = "block";
+	document.getElementById("selectedConvo_writeSend").style.display = "block";
+	loadConvo(contactName);
+}
+
+//Affiche le contact dans l'espace de droite
+function showContact(contactName){
+	let pTitle = document.getElementById("p_title");
+	pTitle.innerHTML = contactName;
+
+	document.getElementById("selectedConvo_writeSend").style.display = "none";
+	document.getElementById("selectedConvo_messages").style.display = "none";
+	document.getElementById("selectedContactInfo").style.display = "block";
+
+	let currentContact;
+	for(data in usersData){
+		if(usersData[data].username == contactName){
+			currentContact = usersData[data];
+		}
+	}
+
+	// document.getElementById("selectedContact_avatar")
+	getAvatar(contactName, document.getElementById("selectedContact_avatar"));
+	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
+	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
+
+}
+
+function soundAnimation(name){
+	let path = "sounds/" + name + "Sound.mp3";
+	let sound = new Audio(path);
+	sound.play();
+	setTimeout(function() {
+		sound.pause();
+		sound.currentTime = 0;
+	}, 2000);
+}
+
+//Va chercher les messages dans la conversations et les affiche
+function updateConvoMessages(convo){
+	let container = document.getElementById("selectedConvo_messages");
+	container.innerHTML = "";
+	let currentMessage;
+	let readLineDone = false;
+	let content;
+	
+	for(id in convo.messages){
+		currentMessage = convo.messages[id];
+
+		if(lastMessageCreated == null){
+			if(currentMessage.senderId == currentUserData.email){
+				addMessage(1, currentMessage);
+			}else{
+				addMessage(0, currentMessage);
+			}
+		}else{
+			if(currentMessage.id != lastMessageCreated.id){
+				if(currentMessage.senderId == currentUserData.email){
+					if(currentMessage.wizzTriggered == "false"){
+						if(!readLineDone){
+							//Permet de dire où est ce que le contact est rendu
+							readLineDone = true;
+							addReadLine();
+						}
+						
+					}
+					addMessage(1, currentMessage);
+					
+				}else{
+					addMessage(0, currentMessage);
+					if(currentMessage.wizzTriggered == "false"){
+						let refCurrentMessage = firebase.database().ref('conversations/' + currentConvo.id + "/messages/" + currentMessage.id + "/wizzTriggered");
+						refCurrentMessage.set("true");
+						if(currentMessage.content != "woush" && currentMessage.content != "blur" && currentMessage.content != "WIZZ"){
+							soundAnimation("new");
+						}
+						
+					}
+				}
+			}
+		}
+		lastMessageCreated = currentMessage;
+	}
+
+	//Pour updater le textHint
+	if(lastMessageCreated==null){
+		content = "Nouvelle Convo!";
+	}else{
+		content = lastMessageCreated.content;
+	}
+	
+	if(content.length >=30){
+		document.getElementById("textHint-"+currentContactName).innerHTML = content.substr(0,30) + "...";
+	}else{
+		document.getElementById("textHint-"+currentContactName).innerHTML = content;
+	}
+
+	container.scrollTop = container.scrollHeight;
+	done = true;
+}
+
+function wizzAnimation(){
+	let wizzSound = new Audio("sounds/wizzSound.mp3");
+	wizzSound.play();
+	let container = document.getElementById("main_body");
+	container.style.animation = "shake 0.5s";
+	container.style.animationIterationCount = "infinite";
+	setTimeout(function() {
+		container.style.animation = '';
+		wizzSound.pause();
+		wizzSound.currentTime = 0;
+	}, 2000);
 	
 }
