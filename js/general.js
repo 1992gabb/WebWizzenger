@@ -37,5 +37,59 @@ function goBack(){
 	document.location.href = "index.html";
 }
 
+//Pour enregistrer un nouvel usager
+function register(){
+    email = document.getElementById("email_register").value;
+    let phone = document.getElementById("phone_register").value;
+    let username = document.getElementById("username_register").value;
 
+    //Vérifie le mot de passe
+    if(document.getElementById("pwd1_register").value == document.getElementById("pwd2_register").value){
+        pwd = document.getElementById("pwd1_register").value;
+    }else{
+        pwd = -1;
+        alert("Veuillez écrire le même mot de passe dans les 2 champs.");
+        document.getElementById("pwd1_register").value = "";
+        document.getElementById("pwd2_register").value = "";
+    }
+    
+    if(pwd!=-1 && username!=""){
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .then(function() {
+            return firebase.auth().createUserWithEmailAndPassword(email, pwd);
+        })
+        .then(function(firebaseUser) {
+            let usersRef = firebase.database().ref('users/').push();
+            let key = usersRef.key;
+            
+            
+            let newUserToWrite={
+                id: key, 
+                avatar: 0,
+                email:email,
+                phone:phone,
+                token:0,
+                username:username
+            }
 
+            usersRef.set(newUserToWrite).then(function(){
+                console.log("yo");
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        document.location.href="main.html";
+                    }
+                });
+            });
+        })
+        .catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorMessage);
+            if(errorCode == "auth/email-already-in-use"){
+                alert("Le courriel est déjà lié à un compte. Veuillez en choisir un autre.");
+            }
+            
+        });
+    }
+}

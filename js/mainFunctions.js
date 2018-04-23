@@ -32,8 +32,6 @@ let storage = firebase.storage();
 let storageRef = storage.ref('avatars/');
 
 
-
-
 //Créé les div pour chacune des conversations
 function addConvoToList(contactName, textHint, lastMessageDate){
 	//Création des variables contenant des valeurs importantes
@@ -100,8 +98,10 @@ function addConvoToList(contactName, textHint, lastMessageDate){
 
 	//Pour gérer le fait d'ouvrir une conversation
 	newConvo.onclick = function (e) {
-		let currentDOM = e.target.parentElement.parentElement;
-		currentContactName = currentDOM.childNodes[1].childNodes[0].innerHTML;
+		newConvo.style.backgroundColor = "";
+		convoTextHint.style.color = "#a8a8a8";
+		newConvo.setAttribute("class", "conversationInList");
+		currentContactName = newConvo.childNodes[1].childNodes[0].innerHTML;
 		lastMessageCreated = null;
 		document.getElementById("message_content").value = "";
 		showConvo(currentContactName);
@@ -457,7 +457,6 @@ function createDatabaseEntry(content){
 		//Pour mettre la convo en haut
 		let convoNode = document.getElementById("convoTime-"+currentContactName).parentElement;
 		let convoNodeCopy = convoNode;
-		console.log(convoNodeCopy);
 		let container = document.getElementById("zone_convos");
 		container.removeChild(convoNode);
 		container.insertBefore(convoNodeCopy, container.childNodes[0]);
@@ -478,12 +477,16 @@ function createNewConvo(otherUserData, contactId){
 	}
 
 	currentContactName = otherUserData.username;
-	currentConvo =  new Conversation(data, currentUserData, usersData[contactId], convosData[data].textHint,convosData[data].messages,convosData[data].lastMessageDate);
+	currentConvo =  new Conversation(key, currentUserData, usersData[contactId], "Nouvelle convo!", "", "");
 	myConvosList.push(currentConvo);
 
-	refConvos.set(newConvoToWrite);
-	createConvoList();
-	createDatabaseEntry("Nouvelle convo!");
+	refConvos.set(newConvoToWrite).then(function(firebaseUser) {
+		currentConvoRef = firebase.database().ref('conversations/' + key);
+		createConvoList();
+		createDatabaseEntry("Nouvelle convo!");
+		loadConvo(usersData[contactId].username);
+	});
+	
 }
 
 //Va chercher la photo associé a un client
@@ -519,6 +522,33 @@ function getAvatar(contactName, currentDiv){
   });
 }
 
+//Pour trouver le user correspondant au contact
+function findContactWithName(contactName){
+	for(data2 in usersData){
+		if(usersData[data2].username == contactName){
+			contactId = data2;
+			user = usersData[data2];
+		}
+	}
+}
+
+//Pour trouver le user correspondant au contact email
+function findContactWithEmail(convo){
+	for(data2 in usersData){
+		if(convo.idUser1 == currentUserData.email){
+			if(usersData[data2].email == convo.idUser2){
+				contactId = data2;
+			}
+		}else{
+			if(usersData[data2].email == convo.idUser1){
+				contactId = data2;
+			}
+		}
+	}
+
+	return contactId;
+}
+
 //Pour aller loader la convo sélectionnée
 function loadConvo(contactName){
 	let found = false;
@@ -552,82 +582,26 @@ function loadConvo(contactName){
 		}
 
 	}).then(function(){
-		currentConvoRef.on('value', function(snapshot) {
-			let currentConvoData = snapshot.val();
-
-			//La convo est ouverte présentement
-			if(currentConvoId == currentConvoData.id){
-				for(let i = 0; i< myConvosList.length; i++){
-					if(myConvosList[i].id == currentConvoData.id){
-						currentConvo =  new Conversation(currentConvoId, currentUserData, usersData[contactId], currentConvoData.textHint,currentConvoData.messages,currentConvoData.lastMessageDate);
-						myConvosList[i] = currentConvo;
-						updateConvoMessages(currentConvo);
-					}
-				}
-			}else{
-				//La convo n'est pas ouverte
-				updateListOnly(currentConvoData);
-			}
-		});
-	});
-}
-
-function updateListOnly(convo){
-	console.log(myConvosList);
-
-	let notCurrentContact = findContactWithEmail(convo);
-
-	for(let i = 0; i< myConvosList.length; i++){
-		console.log(myConvosList[i].id, convo.id);
-		if(myConvosList[i].id == convo.id){
-			myConvosList[i] = new Conversation(convo.id, currentUserData, usersData[notCurrentContact], convo.textHint,convo.messages,convo.lastMessageDate);
-			
-			let contactName = myConvosList[i].user2.username;
-			let textHintNode = document.getElementById("textHint-"+contactName);
-			
-			if(myConvosList[i].textHint.length >=45){
-				let newTextHint = myConvosList[i].textHint.substr(0,42) + "...";
-				textHintNode.innerHTML = newTextHint;
-			}else{
-				textHintNode.innerHTML = myConvosList[i].textHint;
-			}
-
-			let nowDate = new Date();
-			if(nowDate.getDate() == Number(myConvosList[i].lastMessageDate.substr(8,2))){
-				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(11,8);
-			}else{
-				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(5,5);
-			}
-		}
-	}
+		if(currentConvoRef!=null){
+			currentConvoRef.on('value', function(snapshot) {
+				let currentConvoData = snapshot.val();
 	
-}
-
-//Pour trouver le user correspondant au contact
-function findContactWithName(contactName){
-	for(data2 in usersData){
-		if(usersData[data2].username == contactName){
-			contactId = data2;
-			user = usersData[data2];
+				//La convo est ouverte présentement
+				if(currentConvoId == currentConvoData.id){
+					for(let i = 0; i< myConvosList.length; i++){
+						if(myConvosList[i].id == currentConvoData.id){
+							currentConvo =  new Conversation(currentConvoId, currentUserData, usersData[contactId], currentConvoData.textHint,currentConvoData.messages,currentConvoData.lastMessageDate);
+							myConvosList[i] = currentConvo;
+							updateConvoMessages(currentConvo);
+						}
+					}
+				}else{
+					//La convo n'est pas ouverte
+					updateListOnly(currentConvoData);
+				}
+			});
 		}
-	}
-}
-
-//Pour trouver le user correspondant au contact email
-function findContactWithEmail(convo){
-	for(data2 in usersData){
-		if(convo.idUser1 == currentUserData.email){
-			if(usersData[data2].email == convo.idUser2){
-				contactId = data2;
-			}
-		}else{
-			if(usersData[data2].email == convo.idUser1){
-				contactId = data2;
-			}
-		}
-	}
-
-	return contactId;
+	});
 }
 
 //Se déconnecte et retourne à la page de connexion
@@ -1005,6 +979,47 @@ function updateConvoMessages(convo){
 
 	container.scrollTop = container.scrollHeight;
 	done = true;
+}
+
+function updateListOnly(convo){
+	let notCurrentContact = findContactWithEmail(convo);
+	let contactName;
+	let textHintNode;
+	let nowDate = new Date();
+
+	for(let i = 0; i< myConvosList.length; i++){
+		if(myConvosList[i].id == convo.id){
+			myConvosList[i] = new Conversation(convo.id, currentUserData, usersData[notCurrentContact], convo.textHint,convo.messages,convo.lastMessageDate);
+			
+			contactName = myConvosList[i].user2.username;
+			textHintNode = document.getElementById("textHint-"+contactName);
+			
+			if(myConvosList[i].textHint.length >=45){
+				let newTextHint = myConvosList[i].textHint.substr(0,42) + "...";
+				textHintNode.innerHTML = newTextHint;
+			}else{
+				textHintNode.innerHTML = myConvosList[i].textHint;
+			}
+
+			if(nowDate.getDate() == Number(myConvosList[i].lastMessageDate.substr(8,2))){
+				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(11,8);
+			}else{
+				document.getElementById("convoTime-"+contactName).innerHTML =  myConvosList[i].lastMessageDate.substr(5,5);
+			}
+		}
+	}
+
+	let container = textHintNode.parentElement.parentNode;
+	textHintNode.style.color = "black";
+	container.style.backgroundColor = "#8bb372";
+
+	//Pour mettre la convo en haut
+	let convoNode = container;
+	let convoNodeCopy = convoNode;
+	let containerAll = document.getElementById("zone_convos");
+	containerAll.removeChild(convoNode);
+	containerAll.insertBefore(convoNodeCopy, containerAll.childNodes[0]);
+	
 }
 
 function wizzAnimation(){

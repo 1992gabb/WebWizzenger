@@ -242,6 +242,11 @@ footer{
 
 /* Pour la page register */
 
+#register_body{
+	width:100%;
+	overflow: hidden;
+}
+
 #register_zone{
 	color:black;
 	text-align: center;
@@ -312,8 +317,6 @@ footer{
 	grid-template-rows: 10% 90%;
 	overflow:hidden;
 }
-
-
 
 #zone_browsing{
 	height:100%;
@@ -442,6 +445,7 @@ footer{
 	margin:2px 0px;
 	z-index: 1;
 	cursor:pointer;
+	background-color: white;
 }
 
 .conversationInList:hover{
