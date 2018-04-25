@@ -33,7 +33,7 @@ let storageRef = storage.ref('avatars/');
 
 
 //Créé les div pour chacune des conversations
-function addConvoToList(contactName, textHint, lastMessageDate){
+function addConvoToList(convo){
 	//Création des variables contenant des valeurs importantes
 	let newConvo = document.createElement("div");
 	let zoneTexte = document.createElement("div");
@@ -52,39 +52,39 @@ function addConvoToList(contactName, textHint, lastMessageDate){
 	convoAvatar = document.createElement("img");
 	convoAvatar.setAttribute("class", 'convoAvatar');
 	convoAvatar.setAttribute("src", 'images/default_avatar.png');
-	getAvatar(contactName, convoAvatar);
+	getAvatar(convo.user2, convoAvatar);
 
 	//Création de la zone contenant le nom et le textHint
 	zoneTexte.setAttribute("class", "conversationsInList_texte");
 
 	//Création du nom
-	text = document.createTextNode(contactName);
+	text = document.createTextNode(convo.user2.username);
 	convoContact.appendChild(text);
 	zoneTexte.appendChild(convoContact);
 	
 	//Création du textHint
-	id = "textHint-" + contactName;
+	id = "textHint-" + convo.user2.username;
 	convoTextHint.setAttribute("id", id)
 	convoTextHint.setAttribute("style", "font-size: 12px;color:#a8a8a8;");
 
-	if(textHint.length >=45){
-		let newTextHint = textHint.substr(0,42) + "...";
+	if(convo.textHint.length >=45){
+		let newTextHint = convo.textHint.substr(0,42) + "...";
 		text = document.createTextNode(newTextHint);
 	}else{
-		text = document.createTextNode(textHint);
+		text = document.createTextNode(convo.textHint);
 	}
 	convoTextHint.appendChild(text);
 	zoneTexte.appendChild(convoTextHint);
 
 	//Création du timeStamp
-	id = "convoTime-" + contactName;
+	id = "convoTime-" + convo.user2.username;
 	convoTime.setAttribute("id", id)
 	convoTime.setAttribute("style", "font-size: 12px;color:#a8a8a8;float:right; height:100%; line-height:30px;");
 	
-	if(nowDate.getDate() == Number(lastMessageDate.substr(8,2))){
-		text = document.createTextNode(lastMessageDate.substr(11,8));
+	if(nowDate.getDate() == Number(convo.lastMessageDate.substr(8,2))){
+		text = document.createTextNode(convo.lastMessageDate.substr(11,8));
 	}else{
-		text = document.createTextNode(lastMessageDate.substr(5,5));
+		text = document.createTextNode(convo.lastMessageDate.substr(5,5));
 	}
 	convoTime.appendChild(text);
 
@@ -160,22 +160,22 @@ function addContact(email){
 }
 
 //Pour créer des div pour chacun des contacts
-function addContactToList(contactName){
+function addContactToList(contact){
 	let newContact = document.createElement("div");
 	newContact.setAttribute("class", "contactInList");
 
 	let contactAvatar = document.createElement("img");
 	contactAvatar.setAttribute("class", 'contactImages');
 	contactAvatar.setAttribute("src", 'images/default_avatar.png');
-	getAvatar(contactName, contactAvatar);
+	getAvatar(contact.user2, contactAvatar);
 
 	let contactNameP = document.createElement("p");
 	contactNameP.setAttribute("style", "width:48%;height:100%;margin-left:10px;")
-	let text = document.createTextNode(contactName);
+	let text = document.createTextNode(contact.user2.username);
 	contactNameP.appendChild(text);
 
 	let imageMess = document.createElement("img");
-	let id = "imageMess" + contactName;
+	let id = "imageMess-" + contact.user2.username;
 	imageMess.setAttribute("id", id);
 	imageMess.setAttribute("class", 'contactImagesMess');
 	imageMess.setAttribute("src", 'images/ic_mess.png');
@@ -193,10 +193,10 @@ function addContactToList(contactName){
 	container.appendChild(newContact);
 
 	contactAvatar.onclick = function(event){
-		showContact(contactName);
+		showContact(contact.user2);
 	}
 	contactNameP.onclick = function(event){
-		showContact(contactName);
+		showContact(contact.user2);
 	}
 	imageMess.onclick = function(event){
 		showConvo(contactName);
@@ -369,7 +369,7 @@ function createConvoList(){
 		document.getElementById("zone_convos").innerHTML = "";
 
 		for(let i=0;i<myConvosList.length;i++){
-			addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint, myConvosList[i].lastMessageDate);
+			addConvoToList(myConvosList[i]);
 		}
 
 		if(myConvosList.length<15){
@@ -383,7 +383,7 @@ function createContactList(){
 
 	addMessageToContactList(); //Pour ajouter la zone d'ajout et suppression d'un contact
 	for(let i=0;i<myContactsList.length;i++){
-		addContactToList(myContactsList[i].user2.username);
+		addContactToList(myContactsList[i]);
 	}
 }
 
@@ -490,36 +490,33 @@ function createNewConvo(otherUserData, contactId){
 }
 
 //Va chercher la photo associé a un client
-function getAvatar(contactName, currentDiv){
-
-	let currentContact;
-	for(data in usersData){
-		if(usersData[data].username == contactName){
-			currentContact = usersData[data];
-		}
+function getAvatar(currentContact, currentDiv){
+	if(currentContact.avatar == 1){
+		// Get the download URL
+		let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
+		currentAvatarRef.getDownloadURL().then(function(url) {
+			currentAvatarUrl = url;
+			currentDiv.setAttribute("src", url);
+		}).catch(function(error) {
+			switch (error.code) {
+			case 'storage/object-not-found':
+				// console.log(error.code);
+				break;
+			case 'storage/unauthorized':
+				// User doesn't have permission to access the object
+				break;
+			case 'storage/canceled':
+				// User canceled the upload
+				break;
+			case 'storage/unknown':
+				// Unknown error occurred, inspect the server response
+				break;
+			}
+		});
+	}else{
+		currentDiv.setAttribute("src", 'images/default_avatar.png');
 	}
-
-	// Get the download URL
-	let currentAvatarRef = storage.ref('avatars/' + currentContact.email);
-	currentAvatarRef.getDownloadURL().then(function(url) {
-		currentAvatarUrl = url;
-		currentDiv.setAttribute("src", url);
-  	}).catch(function(error) {
-		switch (error.code) {
-		case 'storage/object-not-found':
-			// console.log(error.code);
-			break;
-		case 'storage/unauthorized':
-			// User doesn't have permission to access the object
-			break;
-		case 'storage/canceled':
-			// User canceled the upload
-			break;
-		case 'storage/unknown':
-			// Unknown error occurred, inspect the server response
-			break;
-		}
-  });
+	
 }
 
 //Pour trouver le user correspondant au contact
@@ -778,7 +775,7 @@ function searchListener(event){
 		}else{
 			for(let i=0;i<myConvosList.length;i++){
 				if(myConvosList[i].user2.username.toLowerCase().startsWith(searchText)){
-					addConvoToList(myConvosList[i].user2.username, myConvosList[i].textHint);
+					addConvoToList(myConvosList[i]);
 				}
 			}
 		}
@@ -886,23 +883,16 @@ function showConvo(contactName){
 }
 
 //Affiche le contact dans l'espace de droite
-function showContact(contactName){
+function showContact(currentContact){
 	let pTitle = document.getElementById("p_title");
-	pTitle.innerHTML = contactName;
+	pTitle.innerHTML = currentContact.username;
 
 	document.getElementById("selectedConvo_writeSend").style.display = "none";
 	document.getElementById("selectedConvo_messages").style.display = "none";
 	document.getElementById("selectedContactInfo").style.display = "block";
 
-	let currentContact;
-	for(data in usersData){
-		if(usersData[data].username == contactName){
-			currentContact = usersData[data];
-		}
-	}
-
-	// document.getElementById("selectedContact_avatar")
-	getAvatar(contactName, document.getElementById("selectedContact_avatar"));
+	
+	getAvatar(currentContact, document.getElementById("selectedContact_avatar"));
 	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
 	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
 

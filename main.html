@@ -38,7 +38,15 @@
 			}
 			document.getElementById("ic_info").onclick = function(event){
 				if(document.getElementById("p_title").innerHTML != "Sélectionnez une conversation pour commencer!"){
-					showContact(document.getElementById("p_title").innerHTML);
+
+					for(data2 in usersData){
+						if(usersData[data2].username == document.getElementById("p_title").innerHTML){
+							console.log(usersData[data2]);
+							showContact(usersData[data2]);
+						}
+					}
+
+					
 				}
 				
 			}
