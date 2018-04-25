@@ -62,13 +62,15 @@ function register(){
             let usersRef = firebase.database().ref('users/').push();
             let key = usersRef.key;
             
-            
+            if(phone == ""){
+                phone = "111-111-1111"
+            }
             let newUserToWrite={
                 id: key, 
                 avatar: 0,
                 email:email,
                 phone:phone,
-                token:0,
+                token:"noPhone",
                 username:username
             }
 
