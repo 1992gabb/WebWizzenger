@@ -371,7 +371,7 @@ footer{
 
 /* Pour gérer l'affichage des tabs, inspiré de: https://www.w3schools.com/howto/howto_js_tabs.asp*/
 #titles_tab_titles {
-    overflow: hidden;
+    overflow-x: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
 }
@@ -405,7 +405,6 @@ footer{
 	height:78%;
 	overflow:scroll; 
 	overflow-x: hidden;
-	overflow-y: hidden;
 }
 
 #zone_contacts{
@@ -677,7 +676,7 @@ footer{
 	float:left;
 	width:300px;
 	height:40px;
-	margin:60px 40%;
+	margin:45px 40%;
 }
 /* -------------------- Fin de la page main ------------------------ */
 

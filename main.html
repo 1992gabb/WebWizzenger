@@ -130,9 +130,10 @@
 				</script>
 				<p id= "selectedFileName" style = "width:300px;margin:auto;">Aucun fichier sélectionné</p>
 			
-				<button id="changeUsernameButton" class = "settingsButton">Modifier le nom d'usager</button>
-				<button id="changePasswordButton" class = "settingsButton">Modifier le mot de passe</button>
-				<button id="closeAccountButton" class = "settingsButton">Fermer le compte</button>
+				<button id="changeUsernameButton" class = "settingsButton" onclick = "changeUsername()">Modifier le nom d'usager</button>
+				<button id="changePhoneButton" class = "settingsButton" onclick = "changePhone()">Modifier le téléphone</button>
+				<button id="changePasswordButton" class = "settingsButton" onclick = "changePassword()">Modifier le mot de passe</button>
+				<button id="closeAccountButton" class = "settingsButton" onclick="alert('Veuillez réessayer plus tard.')">Fermer le compte</button>
 				<button id = "logoutButton" class = "settingsButton" onclick="logout()">Se déconnecter</button>
 			</div>
 

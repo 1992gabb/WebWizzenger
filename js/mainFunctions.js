@@ -199,11 +199,11 @@ function addContactToList(contact){
 		showContact(contact.user2);
 	}
 	imageMess.onclick = function(event){
-		showConvo(contactName);
+		showConvo(contact.user2.username);
 	}
 
 	imageWizz.onclick = function(event){
-		showConvo(contactName);
+		showConvo(contact.user2.username);
 		sendWizz();
 	}
 }
@@ -363,6 +363,67 @@ function addTimeStamp(date){
 	container.appendChild(clear);
 }
 
+function changePhone(){
+	let newPhone = prompt("Veuillez entrer un nouveau téléphone ex: 111-111-1111");
+	let valide = true;
+
+	if(newPhone.trim().length == 12){
+		usersRef.child(currentUserData.id).child('phone').set(newPhone);
+		alert("Le numéro a bien été enregistré!");
+	}else{
+		alert("Veuillez entrer le téléphone dans le format proposé.");
+	}
+}
+
+function changePassword(){
+	let oldPwd = prompt("Veuillez entrer votre ancien mot de passe");
+	let pwd1 = prompt("Veuillez entrer un nouveau mot de passe");
+	let pwd2 = prompt("Veuillez confirmer le nouveau mot de passe");
+	let credential = firebase.auth.EmailAuthProvider.credential(currentUserData.email, oldPwd.trim());
+
+	firebase.auth().currentUser.reauthenticateWithCredential(credential).then(function() {
+		if(pwd1.trim() == pwd2.trim()){
+			firebase.auth().currentUser.updatePassword(pwd2).then(function() {
+				alert("Le mot de passe a bien été modifié!");
+			  }).catch(function(error) {
+				// An error happened.
+			  });
+		}
+	}).catch(function(error) {
+		console.log(error.message);
+		alert("Erreur lors de la reauthentification. Veuillez réessayer");
+	});
+
+	
+	
+}
+
+function changeUsername(){
+	let newUsername = prompt("Veuillez entrer votre nouvel username");
+	let valide = true;
+
+	for(data in usersData){
+		if(newUsername == usersData[data].username){
+			valide = false;
+			alert("Ce nom d'usager est déjà utilisé. Veuillez en choisir un autre.");
+		}
+	}
+
+	if(valide){
+		if(newUsername.trim().length > 5 && newUsername.trim().length < 19){
+			if(newUsername.includes("@")){
+				alert("Le caractère @ n'est pas autorisé.");
+			}else{
+				usersRef.child(currentUserData.id).child('username').set(newUsername);
+			}
+			
+		}else{
+			alert("Veuillez entrer un nom d'usager entre 6 et 18 caractères.");
+		}
+	}
+	
+}
+
 //Crée la liste de conversations
 function createConvoList(){
 		sortConvoList();
@@ -464,6 +525,11 @@ function createDatabaseEntry(content){
 }
 
 function createNewConvo(otherUserData, contactId){
+	if(currentConvoRef!=null){
+		currentConvoRef.off();
+	}
+
+	currentContactName = otherUserData.username;
 	let refConvos = firebase.database().ref('conversations/').push();
 	let key = refConvos.key;
 	
@@ -476,7 +542,6 @@ function createNewConvo(otherUserData, contactId){
 		textHint: "Nouvelle convo!"
 	}
 
-	currentContactName = otherUserData.username;
 	currentConvo =  new Conversation(key, currentUserData, usersData[contactId], "Nouvelle convo!", "", "");
 	myConvosList.push(currentConvo);
 
@@ -484,7 +549,7 @@ function createNewConvo(otherUserData, contactId){
 		currentConvoRef = firebase.database().ref('conversations/' + key);
 		createConvoList();
 		createDatabaseEntry("Nouvelle convo!");
-		loadConvo(usersData[contactId].username);
+		loadConvo(currentContactName);
 	});
 	
 }
@@ -552,15 +617,14 @@ function loadConvo(contactName){
 	let created = false;
 	
 
-	if(currentConvoRef!=null){
-		// currentConvoRef.off();
-	}
+	
 	
 	convosRef.once('value', function(snapshot) {
 		convosData = snapshot.val();
 
 		findContactWithName(contactName);
 
+		currentConvoRef == null;
 		for(data in convosData){
 			if(convosData[data].idUser1 == currentUser.email && convosData[data].idUser2 == usersData[contactId].email){
 				currentConvoId = data;
@@ -582,19 +646,22 @@ function loadConvo(contactName){
 		if(currentConvoRef!=null){
 			currentConvoRef.on('value', function(snapshot) {
 				let currentConvoData = snapshot.val();
-	
-				//La convo est ouverte présentement
-				if(currentConvoId == currentConvoData.id){
-					for(let i = 0; i< myConvosList.length; i++){
-						if(myConvosList[i].id == currentConvoData.id){
-							currentConvo =  new Conversation(currentConvoId, currentUserData, usersData[contactId], currentConvoData.textHint,currentConvoData.messages,currentConvoData.lastMessageDate);
-							myConvosList[i] = currentConvo;
-							updateConvoMessages(currentConvo);
+				
+				if(currentConvoData.texthint != "Nouvelle convo!"){
+					//La convo est ouverte présentement
+					if(currentConvoId == currentConvoData.id){
+						for(let i = 0; i< myConvosList.length; i++){
+							if(myConvosList[i].id == currentConvoData.id){
+								currentConvo =  new Conversation(currentConvoId, currentUserData, usersData[contactId], currentConvoData.textHint,currentConvoData.messages,currentConvoData.lastMessageDate);
+								myConvosList[i] = currentConvo;
+								console.log(currentConvo);
+								updateConvoMessages(currentConvo);
+							}
 						}
+					}else{
+						//La convo n'est pas ouverte
+						updateListOnly(currentConvoData);
 					}
-				}else{
-					//La convo n'est pas ouverte
-					updateListOnly(currentConvoData);
 				}
 			});
 		}
@@ -792,8 +859,6 @@ function searchListener(event){
 			}
 		}
 	}
-	
-	
 }
 
 //Réagit au onclick du bouton et envoie le contenu du text area
@@ -1047,6 +1112,7 @@ function writeAvatarToDatabase(file){
 	var avatarRef = storageRef.child('avatars/' + currentUserData.email);
 
 	avatarRef.put(file).then(function(snapshot) {
+		usersRef.child(currentUserData.id).child('avatar').set(1);
 		alert("Votre image a bien été modifiée!");
 	});
 }
