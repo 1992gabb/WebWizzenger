@@ -53,7 +53,7 @@ function register(){
         document.getElementById("pwd2_register").value = "";
     }
     
-    if(pwd!=-1 && username!=""){
+    if(pwd!=-1 && username!="" && username.length >5 && username.length<19 && !username.includes("@")){
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
         .then(function() {
             return firebase.auth().createUserWithEmailAndPassword(email, pwd);
@@ -64,7 +64,11 @@ function register(){
             
             if(phone == ""){
                 phone = "111-111-1111"
+            }else if(phone.trim().length != 12){
+                alert("Votre téléphone n'était pas de le bon format, il a été modifié pour 111-111-1111. Vous pouvez le modifier dans vos paramètres.");
+                phone = "111-111-1111";
             }
+
             let newUserToWrite={
                 id: key, 
                 avatar: 0,
@@ -93,5 +97,7 @@ function register(){
             }
             
         });
+    }else{
+        alert("Le username doit être entre 6 et 18 caractères et ne peut contenir @.");
     }
 }

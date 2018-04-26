@@ -683,7 +683,7 @@ footer{
 
 /* -------------------- Pour mobiles et tablettes ------------------------ */
 
-@media only screen and (max-width: 480px){
+@media screen and (max-width: 1024px){
 	html{
 		background-color:#F1FAEE;
 	}
@@ -698,8 +698,13 @@ footer{
 	header{
 		display:block;
 		font-size:3em;
-		margin:0 20% 100px 22%;
-		padding-top:100px;
+		width:100%;
+		height:230px;
+	}
+	
+	header h3{
+		text-align:center;
+		width:100%;
 	}
 
 	#mess_mobile{
@@ -714,6 +719,27 @@ footer{
 		bottom:0%;
 		font-size:2em;
 		font-family: "Raleway-Regular";
+	}
+
+	#index_content{
+		display:none;
+	}
+
+	#img_wizz2{
+		width: 400px;
+		height:400px;
+		margin:20px 50px;
+		display:block;
+		position:absolute;
+		top:30%;
+		left:25%;
+	}
+	
+	/* Pour faire l'effet wizz */
+	#img_wizz2:hover {
+		animation: shake 0.5s; 
+		/* Le nombre de fois que l'on recommence*/
+		animation-iteration-count: infinite; 
 	}
 }
 
