@@ -786,7 +786,8 @@ function searchListener(event){
 		}else{
 			for(let i=0;i<myContactsList.length;i++){
 				if(myContactsList[i].user2.username.toLowerCase().startsWith(searchText)){
-					addContactToList(myContactsList[i].user2.username);
+					console.log(myContactsList[i].user2);
+					addContactToList(myContactsList[i]);
 				}
 			}
 		}
@@ -879,22 +880,37 @@ function showConvo(contactName){
 	document.getElementById("selectedContactInfo").style.display = "none";
 	document.getElementById("selectedConvo_messages").style.display = "block";
 	document.getElementById("selectedConvo_writeSend").style.display = "block";
+	document.getElementById("settingsPage").style.display = "none";
 	loadConvo(contactName);
 }
 
-//Affiche le contact dans l'espace de droite
+//Affiche la page de contact
 function showContact(currentContact){
 	let pTitle = document.getElementById("p_title");
 	pTitle.innerHTML = currentContact.username;
 
 	document.getElementById("selectedConvo_writeSend").style.display = "none";
 	document.getElementById("selectedConvo_messages").style.display = "none";
+	document.getElementById("settingsPage").style.display = "none";
 	document.getElementById("selectedContactInfo").style.display = "block";
 
-	
 	getAvatar(currentContact, document.getElementById("selectedContact_avatar"));
 	document.getElementById("selectedContact_phone").innerHTML = "Téléphone: " + currentContact.phone;
 	document.getElementById("selectedContact_email").innerHTML = "Courriel: " + currentContact.email;
+
+}
+
+//Affiche la page de settings
+function showSettings(){
+	let pTitle = document.getElementById("p_title");
+	pTitle.innerHTML = "Paramètres du compte";
+
+	document.getElementById("selectedConvo_writeSend").style.display = "none";
+	document.getElementById("selectedConvo_messages").style.display = "none";
+	document.getElementById("selectedContactInfo").style.display = "none";
+	document.getElementById("settingsPage").style.display = "block";
+
+	
 
 }
 
@@ -1024,4 +1040,13 @@ function wizzAnimation(){
 		wizzSound.currentTime = 0;
 	}, 2000);
 	
+}
+
+function writeAvatarToDatabase(file){
+	var storageRef = firebase.storage().ref();
+	var avatarRef = storageRef.child('avatars/' + currentUserData.email);
+
+	avatarRef.put(file).then(function(snapshot) {
+		alert("Votre image a bien été modifiée!");
+	});
 }

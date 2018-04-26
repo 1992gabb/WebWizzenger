@@ -45,10 +45,11 @@
 							showContact(usersData[data2]);
 						}
 					}
-
-					
 				}
-				
+			}
+
+			document.getElementById("ic_settings").onclick = function(event){
+				showSettings();
 			}
 		}
 	</script>
@@ -58,8 +59,8 @@
 	<body id = "main_body">
 		<div id = "zone_browsing">
 			<header id = "main_header">
-					<button id = "button_logout" onclick="logout()">Sortir</button>
-				<p style="text-align:center;">Wizzenger</p>
+					
+				<p style="text-align:center;height:60px;line-height:70px;">Wizzenger</p>
 			</header>
 			<div id = "zone_recherche">
 				<div class="topnav">
@@ -107,7 +108,32 @@
 					<p style = "float:left;line-height:50px;">Retirer le contact: </p>
 					<img id = "selectedContact_removeButton" src="images/button_remove.png" alt="remove button">
 				</div>
+			</div>
 
+			<div id = "settingsPage">
+				<!-- Pour gérer la sélection d'une image -->
+				<input type="file" id = "fileSelector" style="display: none"/>
+				<button id="changeAvatarButton" class = "settingsButton">Modifier l'image de profil</button>
+				<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+				<script>
+					document.getElementById('fileSelector').addEventListener('change', fileSelectorListener, false);
+					
+					$("#changeAvatarButton").on("click", function() {
+						$("#fileSelector").trigger("click");
+					});
+
+					function fileSelectorListener(evt) {
+						let file = evt.target.files; 
+						document.getElementById('selectedFileName').innerHTML = "Nom du fichier sélectionné: " + file[0].name;
+						writeAvatarToDatabase(file[0]);
+					}
+				</script>
+				<p id= "selectedFileName" style = "width:300px;margin:auto;">Aucun fichier sélectionné</p>
+			
+				<button id="changeUsernameButton" class = "settingsButton">Modifier le nom d'usager</button>
+				<button id="changePasswordButton" class = "settingsButton">Modifier le mot de passe</button>
+				<button id="closeAccountButton" class = "settingsButton">Fermer le compte</button>
+				<button id = "logoutButton" class = "settingsButton" onclick="logout()">Se déconnecter</button>
 			</div>
 
 			<div id = "selectedConvo_writeSend">
